@@ -24,7 +24,8 @@ const config = {
                 include: APP_DIR,
                 loader: 'babel-loader',
                 query: {
-                    presets: ['react', 'env', 'stage-1'],
+                    presets: ['@babel/react', '@babel/env'],
+                    plugins: ['@babel/plugin-proposal-class-properties'],
                 },
             },
             {

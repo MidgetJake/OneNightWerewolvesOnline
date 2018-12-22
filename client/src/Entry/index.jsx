@@ -5,6 +5,7 @@ import { Router, Route, Switch, Redirect } from 'react-router-dom';
 import { muiDarkTheme as darkTheme, muiLightTheme as lightTheme } from 'theme';
 
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
+import Navbar from 'Components/Navbar';
 
 const hist = createBrowserHistory();
 
@@ -31,6 +32,7 @@ class MainRouter extends React.Component {
         return (
             <Router history={hist}>
                 <MuiThemeProvider theme={this.state.theme}>
+                    <Navbar />
                     <Switch>
                         <Route path={'/'} />
                         {this.state.privateRoutes}
