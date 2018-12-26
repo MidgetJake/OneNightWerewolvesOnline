@@ -6,6 +6,7 @@ import { muiDarkTheme as darkTheme, muiLightTheme as lightTheme } from 'theme';
 
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 import Navbar from 'Components/Navbar';
+import GameRoom from 'Pages/GameRoom';
 
 const hist = createBrowserHistory();
 
@@ -24,7 +25,7 @@ class MainRouter extends React.Component {
     handleChangeTheme = () => {
         this.setState({
             theme: this.state.currTheme === 'light' ? darkTheme : lightTheme,
-            currTheme: this.state.currTheme === 'light' ? 'dark' : 'light' ,
+            currTheme: this.state.currTheme === 'light' ? 'dark' : 'light',
         });
     };
 
@@ -33,11 +34,12 @@ class MainRouter extends React.Component {
             <Router history={hist}>
                 <MuiThemeProvider theme={this.state.theme}>
                     <Navbar />
-                    <Switch>
+                    <GameRoom />
+                    {/*<Switch>
                         <Route path={'/'} />
                         {this.state.privateRoutes}
                         <Redirect from={'*'} to={'/'}/>
-                    </Switch>
+                    </Switch>*/}
                 </MuiThemeProvider>
             </Router>
         )

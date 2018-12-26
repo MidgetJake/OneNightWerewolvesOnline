@@ -1,0 +1,10 @@
+{
+  "preset": "airbnb",
+  "validateIndentation": 4,
+  "requireSpacesInAnonymousFunctionExpression": null,
+  "requireLineFeedAtFileEnd": null,
+  "disallowVar": true,
+  "disallowQuotedKeysInObjects": null,
+  "maximumLineLength": null,
+  "validateLineBreaks": null
+}
