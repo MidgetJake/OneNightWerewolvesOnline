@@ -9,6 +9,8 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 
+import PlayerList from 'Components/GameRoom/PlayerList';
+
 class GameRoom extends React.Component {
     constructor(props) {
         super(props);
@@ -99,7 +101,7 @@ class GameRoom extends React.Component {
         const { classes } = this.props;
 
         return (
-            <div className={classes.back}>
+            <div className={this.state.connected ? classes.gameBack : classes.back}>
                 {this.state.loading ? (
                     <CircularProgress/>
                 ) : this.state.nameDialog ? (
@@ -117,7 +119,7 @@ class GameRoom extends React.Component {
                 ) : !this.state.roomExists ? (
                     <Typography>Room does not exist!</Typography>
                 ) : (
-                    <Typography>{this.state.usernames.join(', ')}</Typography>
+                    <PlayerList players={this.state.usernames}/>
                 )}
             </div>
         );

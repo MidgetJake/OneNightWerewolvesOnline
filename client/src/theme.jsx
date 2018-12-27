@@ -23,7 +23,10 @@ const muiLightTheme = createMuiTheme({
             dark: '#7289DA',
             contrastText: '#fff',
         },
-    }
+    },
+    typography: {
+        useNextVariants: true,
+    },
 });
 
 const muiDarkTheme = createMuiTheme({
@@ -58,6 +61,9 @@ const muiDarkTheme = createMuiTheme({
             dark: '#7289DA',
             contrastText: '#fff',
         },
+    },
+    typography: {
+        useNextVariants: true,
     },
 });
 

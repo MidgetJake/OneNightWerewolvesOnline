@@ -7,6 +7,12 @@ export default theme => ({
         justifyContent: 'center',
         flexGrow: 1,
     },
+    gameBack: {
+        background: '#444',
+        width: '100vw',
+        display: 'flex',
+        flexGrow: 1,
+    },
     nameCard: {
         width: 200,
         display: 'flex',
