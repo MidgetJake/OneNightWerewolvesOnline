@@ -13,7 +13,7 @@ class GameRoom extends React.Component {
     constructor(props) {
         super(props);
 
-        this.cookies = document.cookie.split(':').reduce((res, c) => {
+        this.cookies = document.cookie.split(';').reduce((res, c) => {
             const data = c.trim().split('=').map(decodeURIComponent);
             console.log(data);
             const key = data[0];
@@ -30,7 +30,7 @@ class GameRoom extends React.Component {
         console.log(this.cookies);
 
         this.state = {
-            playername: this.cookies.uniqueID || '',
+            playername: this.cookies.username || '',
             loading: true,
             roomExists: false,
             nameDialog: false,
@@ -47,6 +47,7 @@ class GameRoom extends React.Component {
 
     connectToRoom = () => {
         this.setState({ loading: true, nameDialog: false });
+        document.cookie = 'username=' + this.state.playername;
         this.connection.send(JSON.stringify(({
             type: 'room-connection',
             data: {
@@ -84,6 +85,7 @@ class GameRoom extends React.Component {
                                 break;
                             case 'user-disconnected':
                                 this.getPlayers();
+                                break;
                         }
                     };
                 } else {

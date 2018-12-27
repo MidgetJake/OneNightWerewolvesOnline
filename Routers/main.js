@@ -1,6 +1,5 @@
 'use strict';
 let WebSocket = null;
-const ws = require('ws');
 
 module.exports = function() {
     return {
