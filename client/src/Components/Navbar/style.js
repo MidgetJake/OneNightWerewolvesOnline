@@ -1,7 +1,4 @@
 export default theme => ({
-    root: {
-        flexGrow: 1,
-    },
     grow: {
         flexGrow: 1,
     },

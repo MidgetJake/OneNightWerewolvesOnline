@@ -14,6 +14,7 @@ class Index {
 
         // Listener for a new connection to the WebSocket server
         this.ws.on('connection', (client, req) => {
+            client.ip = req.connection.remoteAddress;
             client.isAlive = true;
             client.on('pong', () => this.heartbeat(client));
 
@@ -29,13 +30,7 @@ class Index {
                 );
 
                 // Assign the client a unique ID
-                // ToDo: Have the users give themself a name, instead of an incremental number
-                client.id = this.connectionCount++;
-                client.send(JSON.stringify({ type: 'connection-id-assign', data: { id: client.id } }));
-            } else {
-                // The client had already been connected before
-                console.log('--[ WS CONNECTION ]--', client.protocol, 'has reconnected to the server');
-                client.id = client.protocol;
+                client.send(JSON.stringify({ type: 'initial-connection' }));
             }
 
             // Listen for messages from the client
@@ -44,12 +39,7 @@ class Index {
 
                 switch (message.type) {
                     case 'room-connection':
-                        this.clientJoinRoom(client, message.data.roomHash);
-
-                        // Listen for the clients to close their connection
-                        client.on('close', () => {
-                            this.rooms[message.data.roomHash].prepareForDisconnect(client);
-                        });
+                        this.clientJoinRoom(client, message.data);
                         break;
                 }
             });
@@ -89,12 +79,12 @@ class Index {
         }
     };
 
-    clientJoinRoom(client, roomHash) {
-        console.log('--[ WS ROOM CONNECTION ]-- Attempting to connect to room:', roomHash);
+    clientJoinRoom(client, data) {
+        console.log('--[ WS ROOM CONNECTION ]-- Attempting to connect to room:', data.roomHash);
 
         // Check if a room actually exists
-        if (!this.rooms.hasOwnProperty(roomHash)) {
-            console.log('--[ WS ROOM CONNECTION FAILURE ]-- Room', roomHash, 'does not exist');
+        if (!this.rooms.hasOwnProperty(data.roomHash)) {
+            console.log('--[ WS ROOM CONNECTION FAILURE ]-- Room', data.roomHash, 'does not exist');
             client.send(JSON.stringify({
                 type: 'room-connection',
                 data: {
@@ -105,7 +95,8 @@ class Index {
             return false;
         }
 
-        this.rooms[roomHash].clientConnect(client);
+        client.username = data.username;
+        this.rooms[data.roomHash].connect(client);
     };
 
     heartbeat(ws) {

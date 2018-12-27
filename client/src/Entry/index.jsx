@@ -42,7 +42,7 @@ class MainRouter extends React.Component {
                     </Switch>*/}
                 </MuiThemeProvider>
             </Router>
-        )
+        );
     }
 }
 
