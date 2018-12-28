@@ -34,12 +34,10 @@ class MainRouter extends React.Component {
             <Router history={hist}>
                 <MuiThemeProvider theme={this.state.theme}>
                     <Navbar />
-                    <GameRoom />
-                    {/*<Switch>
-                        <Route path={'/'} />
-                        {this.state.privateRoutes}
+                    <Switch>
+                        <Route path={'/room/:roomcode'} component={GameRoom}/>
                         <Redirect from={'*'} to={'/'}/>
-                    </Switch>*/}
+                    </Switch>
                 </MuiThemeProvider>
             </Router>
         );

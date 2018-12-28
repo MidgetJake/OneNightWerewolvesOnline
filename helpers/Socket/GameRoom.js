@@ -1,12 +1,14 @@
 const bcrypt = require('bcrypt-nodejs');
+const shortid = require('shortid');
 const CardList = require('../Cards/CardList');
 
 // This class will handle what is needed for the game room to function
 class GameRoom {
     constructor(roomname, hostname, data = {}) {
         // The chances of this roomhash already existing is basically impossible...
-        this.roomhash = bcrypt.hashSync(hostname + roomname + Math.floor((Math.random() * 10000) + 1) + new Date().toDateString(), '', null);
-        this.roomhash = this.roomhash.replace(/[^a-zA-Z]/g, '');
+        // this.roomhash = bcrypt.hashSync(hostname + roomname + Math.floor((Math.random() * 46656)) + new Date().toDateString(), '', null);
+        // this.roomhash = this.roomhash.replace(/[^a-zA-Z]/g, '');
+        this.roomhash = shortid.generate();
 
         console.log('--[ WS ROOM CREATION ]-- Creating new room:', this.roomhash);
 

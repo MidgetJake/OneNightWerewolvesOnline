@@ -17,7 +17,7 @@ class SelectorCard extends React.Component {
     }
 
     handleToggleActive = () => {
-        if(!this.props.host) return;
+        if (!this.props.host) return;
 
         const socketMessage = {
             type: this.state.active ? 'remove-card' : 'add-card',

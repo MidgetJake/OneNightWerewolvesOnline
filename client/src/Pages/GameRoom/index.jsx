@@ -30,7 +30,7 @@ class GameRoom extends React.Component {
 
         this.urlParams = new URLSearchParams(window.location.search);
 
-        console.log(this.cookies);
+        console.log(this.props.match);
 
         this.state = {
             playername: this.cookies.username || '',
@@ -64,14 +64,14 @@ class GameRoom extends React.Component {
         this.connection.send(JSON.stringify(({
             type: 'room-connection',
             data: {
-                roomHash: this.urlParams.get('roomhash'),
+                roomHash: this.props.match.params.roomcode,
                 username: this.state.playername,
             },
         })));
     };
 
     getPlayers = () => {
-        axios.post('/room/players/' + this.urlParams.get('roomhash')).then(response => {
+        axios.post('/room/players/' + this.props.match.params.roomcode).then(response => {
             if (response.data.success) {
                 this.setState({ loading: false, connected: true, usernames: response.data.players });
             }
@@ -79,7 +79,7 @@ class GameRoom extends React.Component {
     };
 
     getCards = () => {
-        axios.post('room/getcards/' + this.urlParams.get('roomhash')).then(response => {
+        axios.post('/room/getcards/' + this.props.match.params.roomcode).then(response => {
             if (response.data.success) {
                 this.setState(state => {
                     for (let i = 0; i < state.cards.length; i++) {
@@ -99,50 +99,55 @@ class GameRoom extends React.Component {
     };
 
     componentDidMount() {
-        if (this.urlParams.has('roomhash')) {
-            axios.post('/room/exists/' + this.urlParams.get('roomhash')).then(response => {
-                if (response.data.exists) {
-                    this.setState({ roomExists: true, nameDialog: true, loading: false });
-                    this.connection = new WebSocket('ws://localhost', [this.urlParams.get('roomhash')]);
+        axios.post('/room/exists/' + this.props.match.params.roomcode).then(response => {
+            if (response.data.exists) {
+                this.setState({ roomExists: true, nameDialog: true, loading: false });
+                this.connection = new WebSocket('ws://localhost', [this.props.match.params.roomcode]);
 
-                    this.connection.onmessage = rawmsg => {
-                        console.log(rawmsg);
-                        const message = JSON.parse(rawmsg.data);
+                this.connection.onmessage = rawmsg => {
+                    console.log(rawmsg);
+                    const message = JSON.parse(rawmsg.data);
 
-                        switch (message.type) {
-                            case 'room-connected':
-                                if (message.data.host) {
-                                    this.setState({ isHost: true });
+                    switch (message.type) {
+                        case 'room-connected':
+                            if (message.data.host) {
+                                this.setState({ isHost: true });
+                            }
+
+                            this.getPlayers();
+                            this.getCards();
+                            break;
+                        case 'user-connected':
+                            this.setState({
+                                usernames: [
+                                    ...this.state.usernames, {
+                                        username: message.data.username,
+                                        host: false,
+                                    },
+                                ],
+                            });
+                            break;
+                        case 'user-disconnected':
+                            this.getPlayers();
+                            break;
+                        case 'update-card':
+                            this.setState(state => {
+                                for (let i = 0; i < state.cards.length; i++) {
+                                    if (state.cards[i].name === message.data.card) {
+                                        state.cards[i].active = message.data.active;
+                                        break;
+                                    }
                                 }
 
-                                this.getPlayers();
-                                this.getCards();
-                                break;
-                            case 'user-connected':
-                                this.setState({ usernames: [...this.state.usernames, { username: message.data.username, host: false }] });
-                                break;
-                            case 'user-disconnected':
-                                this.getPlayers();
-                                break;
-                            case 'update-card':
-                                this.setState(state => {
-                                    for (let i = 0; i < state.cards.length; i++) {
-                                        if (state.cards[i].name === message.data.card) {
-                                            state.cards[i].active = message.data.active;
-                                            break;
-                                        }
-                                    }
-
-                                    return state;
-                                });
-                                break;
-                        }
-                    };
-                } else {
-                    this.setState({ roomExists: false, loading: false });
-                }
-            });
-        }
+                                return state;
+                            });
+                            break;
+                    }
+                };
+            } else {
+                this.setState({ loading: false, roomExists: false });
+            }
+        });
     }
 
     render() {
