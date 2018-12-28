@@ -8,12 +8,18 @@ export default theme => ({
         flexGrow: 1,
     },
     gameBack: {
-        background: '#888',
+        background: '#666',
         width: '100vw',
         display: 'flex',
         flexGrow: 1,
         height: '100%',
         alignItems: 'flex-start',
+    },
+    controlSector: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'stretch',
+        justifyContent: 'flex-start',
     },
     cardContainter: {
         display: 'flex',

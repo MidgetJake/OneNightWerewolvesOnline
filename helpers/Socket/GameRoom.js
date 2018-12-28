@@ -1,4 +1,3 @@
-const bcrypt = require('bcrypt-nodejs');
 const shortid = require('shortid');
 const CardList = require('../Cards/CardList');
 
@@ -16,6 +15,8 @@ class GameRoom {
         this.players = [];
         this.maxPlayers = data.maxPlayers || 16;
         this.cardsInPlay = [];
+        this.inProgress = false;
+        this.centreCards = [];
     }
 
     addCard(card) {
@@ -30,10 +31,88 @@ class GameRoom {
         }
     }
 
+    makeGameTurn(turnOrder, turn) {
+        this.sendMessageToAll(JSON.stringify({ type: 'go-sleep' }));
+        setTimeout(() => {
+            console.log(turn);
+            while (!turnOrder.hasOwnProperty(turn.toString())) {
+                turn++;
+                if (turn > 25) {
+                    break;
+                }
+            }
+
+            if (turn > 25) {
+                return;
+            }
+
+            this.sendMessageToAll(JSON.stringify({ type: 'turn-text', data: { text: turnOrder[turn.toString()][0].globalInstructions } }));
+
+            console.log(turn, turnOrder[turn.toString()].length);
+            for (let cards of turnOrder[turn.toString()]) {
+                if (cards.player !== null) {
+                    cards.player.send(JSON.stringify({ type: 'wake-up' }));
+                }
+            }
+
+            setTimeout(() => {
+                console.log('Turn done!');
+                for (let cards of turnOrder[turn.toString()]) {
+                    if (cards.player !== null) {
+                        cards.player.send(JSON.stringify({ type: 'go-sleep' }));
+                    }
+                }
+
+                if (turn <= 25) {
+                    this.makeGameTurn(turnOrder, ++turn);
+                }
+            }, 5000);
+        }, 1500);
+    }
+
     startGame() {
-        if (this.players.length < 3 || this.players.length < this.cardsInPlay.length - 4) {
+        if (this.players.length < 3 || this.players.length > this.cardsInPlay.length - 4) {
             return this.sendMessageToHost(JSON.stringify({ type: 'failed-game-start', data: { reason: 'Not enough players' } }));
         }
+
+        this.inProgress = true;
+        this.sendMessageToAll(JSON.stringify({ type: 'game-start' }));
+
+        const cardList = this.cardsInPlay;
+        for (let i = cardList.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [cardList[i], cardList[j]] = [cardList[j], cardList[i]];
+        }
+
+        console.log(cardList);
+
+        for (let i = 0; i < this.players.length; i++) {
+            console.log(cardList[i].name);
+            this.players[i].send(JSON.stringify({ type: 'card-assign', data: { card: cardList[i].name } }));
+            cardList[i].player = this.players[i];
+            this.players[i].card = cardList[i].name;
+        }
+
+        for (let i = 0; i < 4; i++) {
+            this.centreCards.push(this.cardsInPlay[i + this.players.length]);
+        }
+
+        const turnOrder = {};
+        for (let card of cardList) {
+            console.log(card.name, card.player !== null);
+            if (turnOrder.hasOwnProperty(card.turn.toString())) {
+                turnOrder[card.turn.toString()].push(card);
+            } else {
+                turnOrder[card.turn.toString()] = [card];
+            }
+        }
+
+        console.log(turnOrder);
+
+        setTimeout(() => {
+            this.makeGameTurn(turnOrder, 0);
+            console.log('Game Over!');
+        }, 15000);
     }
 
     // Disconnect the client from the room
@@ -58,6 +137,11 @@ class GameRoom {
         if (this.players.length >= this.maxPlayers) {
             console.log('--[ WS ROOM CONNECTION REJECTED ]-- Room', this.roomhash, 'is full!');
             return client.send(JSON.stringify({ type: 'connection-failed', data: { reason: 'Room is full' } }));
+        }
+
+        if (this.inProgress) {
+            console.log('--[ WS ROOM CONNECTION REJECTED ]-- Room', this.roomhash, 'is in progress!');
+            return client.send(JSON.stringify({ type: 'connection-failed', data: { reason: 'Game is in progress' } }));
         }
 
         client.id = this.players.length;
@@ -85,6 +169,10 @@ class GameRoom {
                     break;
                 case 'get-cards':
                     client.send(JSON.stringify({ type: 'get-cards', data: { cards: this.cardsInPlay.map(card => (card.clientName)) } }));
+                    break;
+                case 'start-game':
+                    if (!client.host) break;
+                    this.startGame();
                     break;
             }
         });

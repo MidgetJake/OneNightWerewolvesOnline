@@ -11,6 +11,8 @@ import TextField from '@material-ui/core/TextField';
 
 import PlayerList from 'Components/GameRoom/PlayerList';
 import SelectorCard from 'Components/GameRoom/SelectorCard';
+import ControlBar from 'Components/GameRoom/ControlBar';
+import Game from 'Components/Game';
 
 class GameRoom extends React.Component {
     constructor(props) {
@@ -28,10 +30,6 @@ class GameRoom extends React.Component {
             }
         }, {});
 
-        this.urlParams = new URLSearchParams(window.location.search);
-
-        console.log(this.props.match);
-
         this.state = {
             playername: this.cookies.username || '',
             loading: true,
@@ -40,6 +38,7 @@ class GameRoom extends React.Component {
             connected: false,
             usernames: [],
             isHost: false,
+            game: false,
             cards: [
                 { card: 'Werewolf', name: 'Werewolf1', active: false },
                 { card: 'Werewolf', name: 'Werewolf2', active: false },
@@ -142,6 +141,9 @@ class GameRoom extends React.Component {
                                 return state;
                             });
                             break;
+                        case 'game-start':
+                            this.setState({ game: true });
+                            break;
                     }
                 };
             } else {
@@ -149,6 +151,11 @@ class GameRoom extends React.Component {
             }
         });
     }
+
+    startGame = () => {
+        if (!this.state.isHost) return;
+        this.sendMessage(JSON.stringify({ type: 'start-game' }));
+    };
 
     render() {
         const { classes } = this.props;
@@ -171,15 +178,24 @@ class GameRoom extends React.Component {
                     </Card>
                 ) : !this.state.roomExists ? (
                     <Typography>Room does not exist!</Typography>
+                ) : this.state.game ? (
+                    <Game socket={this.connection}/>
                 ) : (
-                    <div className={classes.gameBack}>
+                    <Card className={classes.gameBack}>
                         <PlayerList players={this.state.usernames}/>
-                        <div className={classes.cardContainter}>
-                            {this.state.cards.map((card, index) => (
-                                <SelectorCard key={index} card={card} host={this.state.isHost} sendMessage={this.sendMessage}/>
-                            ))}
+                        <div className={classes.controlSector}>
+                            {this.state.isHost ? (
+                                <ControlBar onStart={this.startGame}/>
+                            ) : (
+                                null
+                            )}
+                            <div className={classes.cardContainter}>
+                                {this.state.cards.map((card, index) => (
+                                    <SelectorCard key={index} card={card} host={this.state.isHost} sendMessage={this.sendMessage}/>
+                                ))}
+                            </div>
                         </div>
-                    </div>
+                    </Card>
                 )}
             </div>
         );

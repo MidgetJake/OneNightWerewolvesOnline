@@ -8,6 +8,7 @@ class Mason extends Card {
             turn: 5,
             actionDesc: 'You will know who the other Masons are.',
             turnInstructions: 'You can now see the other Masons',
+            globalInstructions: 'Masons, wake up and see the other Masons',
         });
     }
 }

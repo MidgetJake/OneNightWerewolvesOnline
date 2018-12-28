@@ -9,6 +9,7 @@ class Werewolf extends Card {
             turn: 2,
             actionDesc: 'You know the other werewolves and are trying to stay hidden from the village',
             turnInstructions: 'You can now see the other werewolves',
+            globalInstructions: 'Werewolves, wake up and see the other werewolves',
         });
     }
 }
