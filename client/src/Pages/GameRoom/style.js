@@ -1,6 +1,6 @@
 export default theme => ({
     back: {
-        background: '#444',
+        background: '#888',
         width: '100vw',
         display: 'flex',
         alignItems: 'center',
@@ -8,10 +8,21 @@ export default theme => ({
         flexGrow: 1,
     },
     gameBack: {
-        background: '#444',
+        background: '#888',
         width: '100vw',
         display: 'flex',
         flexGrow: 1,
+        height: '100%',
+        alignItems: 'flex-start',
+    },
+    cardContainter: {
+        display: 'flex',
+        width: 'calc(100vw - 201px)',
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        paddingLeft: 15,
+        paddingRight: 15,
     },
     nameCard: {
         width: 200,

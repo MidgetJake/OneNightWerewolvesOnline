@@ -10,6 +10,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 
 import PlayerList from 'Components/GameRoom/PlayerList';
+import SelectorCard from 'Components/GameRoom/SelectorCard';
 
 class GameRoom extends React.Component {
     constructor(props) {
@@ -38,6 +39,16 @@ class GameRoom extends React.Component {
             nameDialog: false,
             connected: false,
             usernames: [],
+            isHost: false,
+            cards: [
+                { card: 'Werewolf', name: 'Werewolf1', active: false },
+                { card: 'Werewolf', name: 'Werewolf2', active: false },
+                { card: 'Villager', name: 'Villager1', active: false },
+                { card: 'Villager', name: 'Villager2', active: false },
+                { card: 'Villager', name: 'Villager3', active: false },
+                { card: 'Mason', name: 'Mason1', active: false },
+                { card: 'Mason', name: 'Mason2', active: false },
+            ],
         };
     }
 
@@ -67,6 +78,26 @@ class GameRoom extends React.Component {
         });
     };
 
+    getCards = () => {
+        axios.post('room/getcards/' + this.urlParams.get('roomhash')).then(response => {
+            if (response.data.success) {
+                this.setState(state => {
+                    for (let i = 0; i < state.cards.length; i++) {
+                        if (response.data.cards.includes(state.cards[i].name)) {
+                            state.cards[i].active = true;
+                        }
+                    }
+
+                    return state;
+                });
+            }
+        });
+    };
+
+    sendMessage = message => {
+        this.connection.send(message);
+    };
+
     componentDidMount() {
         if (this.urlParams.has('roomhash')) {
             axios.post('/room/exists/' + this.urlParams.get('roomhash')).then(response => {
@@ -80,13 +111,30 @@ class GameRoom extends React.Component {
 
                         switch (message.type) {
                             case 'room-connected':
+                                if (message.data.host) {
+                                    this.setState({ isHost: true });
+                                }
+
                                 this.getPlayers();
+                                this.getCards();
                                 break;
                             case 'user-connected':
-                                this.setState({ usernames: [...this.state.usernames, message.data.username] });
+                                this.setState({ usernames: [...this.state.usernames, { username: message.data.username, host: false }] });
                                 break;
                             case 'user-disconnected':
                                 this.getPlayers();
+                                break;
+                            case 'update-card':
+                                this.setState(state => {
+                                    for (let i = 0; i < state.cards.length; i++) {
+                                        if (state.cards[i].name === message.data.card) {
+                                            state.cards[i].active = message.data.active;
+                                            break;
+                                        }
+                                    }
+
+                                    return state;
+                                });
                                 break;
                         }
                     };
@@ -101,7 +149,7 @@ class GameRoom extends React.Component {
         const { classes } = this.props;
 
         return (
-            <div className={this.state.connected ? classes.gameBack : classes.back}>
+            <div className={classes.back}>
                 {this.state.loading ? (
                     <CircularProgress/>
                 ) : this.state.nameDialog ? (
@@ -119,7 +167,14 @@ class GameRoom extends React.Component {
                 ) : !this.state.roomExists ? (
                     <Typography>Room does not exist!</Typography>
                 ) : (
-                    <PlayerList players={this.state.usernames}/>
+                    <div className={classes.gameBack}>
+                        <PlayerList players={this.state.usernames}/>
+                        <div className={classes.cardContainter}>
+                            {this.state.cards.map((card, index) => (
+                                <SelectorCard key={index} card={card} host={this.state.isHost} sendMessage={this.sendMessage}/>
+                            ))}
+                        </div>
+                    </div>
                 )}
             </div>
         );

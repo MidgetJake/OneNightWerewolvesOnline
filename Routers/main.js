@@ -9,6 +9,7 @@ module.exports = function() {
             router.post('/room/create', this.createRoom);
             router.post('/room/exists/:roomhash', this.roomExists);
             router.post('/room/players/:roomhash', this.roomPlayers);
+            router.post('/room/getcards/:roomhash', this.getRoomCards);
         },
 
         setSocket: function(socket) {
@@ -32,13 +33,24 @@ module.exports = function() {
         roomPlayers: function(req, res) {
             if (WebSocket.rooms.hasOwnProperty(req.params.roomhash)) {
                 return res.json({
-                    success: true, players: WebSocket.rooms[req.params.roomhash].players.map(player => {
-                        return player.username;
-                    }),
+                    success: true, players: WebSocket.rooms[req.params.roomhash].players.map(player => (
+                        { username: player.username, host: player.host })
+                    ),
                 });
             } else {
                 return res.json({ success: false, errorMsg: 'Room does not exist' });
             }
         },
+
+        getRoomCards: function(req, res) {
+            if (WebSocket.rooms.hasOwnProperty(req.params.roomhash)) {
+                return res.json({
+                    success: true,
+                    cards: WebSocket.rooms[req.params.roomhash].cardsInPlay.map(card => card.clientName),
+                });
+            } else {
+                return res.json({ success: false, errorMsg: 'Room does not exist' });
+            }
+        }
     };
 };

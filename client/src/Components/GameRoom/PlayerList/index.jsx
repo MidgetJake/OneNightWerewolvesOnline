@@ -20,11 +20,11 @@ class PlayerList extends React.Component {
                 <ListItem className={classes.titleItem}>
                     <ListItemText primary='Players' />
                 </ListItem>
-                {this.props.players.map(player => (
-                    <div>
+                {this.props.players.map((player, index) => (
+                    <div key={index}>
                         <Divider light />
                         <ListItem button>
-                            <ListItemText primary={player} />
+                            <ListItemText primary={player.username} secondary={player.host ? 'host' : ''} />
                         </ListItem>
                     </div>
                 ))}
