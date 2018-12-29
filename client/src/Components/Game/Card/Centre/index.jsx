@@ -12,15 +12,18 @@ class CentreCard extends React.Component {
 
         this.state = {
             cardText: 'Centre Card #' + this.props.cardNum,
+            canInteract: 'none',
         };
     }
 
     handleClick = () => {
-        this.props.onClick(true, this.props.cardNum);
+        if (this.state.canInteract === 'centre' || this.state.canInteract === 'both') {
+            this.props.onClick(true, this.props.cardNum);
+        }
     };
 
     static getDerivedStateFromProps(nextProps, prevState) {
-        return { cardText: nextProps.cardName };
+        return { cardText: nextProps.cardName, canInteract: nextProps.canInteract };
     }
 
     render() {

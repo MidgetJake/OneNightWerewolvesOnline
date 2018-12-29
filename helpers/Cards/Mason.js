@@ -11,6 +11,21 @@ class Mason extends Card {
             globalInstructions: 'Masons, wake up and see the other Masons',
         });
     }
+
+    doTurn(client, gameRoom) {
+        client.send(JSON.stringify({
+            type: 'wake-up',
+            data: {
+                othersAwake: gameRoom.awakePlayers.map((other, index) => {
+                    if (other.id !== client.id) {
+                        return other.username;
+                    }
+                }),
+                turnInstructions: this.turnInstructions,
+                canInteract: this.canInteract,
+            },
+        }));
+    }
 }
 
 module.exports = Mason;

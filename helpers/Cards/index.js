@@ -7,6 +7,7 @@ class Card {
         this.actionDesc = data.actionDesc || 'Plain ol\' standard card that does nothing';
         this.turnInstructions = data.turnInstructions || 'You don\'t wake up, so should never see this';
         this.globalInstructions = data.globalInstructions || 'Stay asleep';
+        this.canInteract = data.canInteract || 'none';
         this.player = null;
     }
 }

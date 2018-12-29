@@ -49,6 +49,7 @@ class GameRoom extends React.Component {
                 { card: 'Mason', name: 'Mason1', active: false },
                 { card: 'Mason', name: 'Mason2', active: false },
                 { card: 'Tanner', name: 'Tanner', active: false },
+                { card: 'Seer', name: 'Seer', active: false },
             ],
         };
     }

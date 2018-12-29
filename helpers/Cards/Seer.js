@@ -1,31 +1,34 @@
 const Card = require('./index');
 
-class Werewolf extends Card {
+class Seer extends Card {
     constructor(clientName) {
         super({
-            team: 'Werewolf',
-            name: 'Werewolf',
+            name: 'Seer',
             clientName,
-            turn: 2,
-            actionDesc: 'You know the other werewolves and are trying to stay hidden from the village',
-            turnInstructions: 'You can now see the other werewolves',
-            globalInstructions: 'Werewolves, wake up and see the other werewolves',
+            turn: 7,
+            actionDesc: 'You wake up and look at 1 player card or 2 centre cards',
+            turnInstructions: 'Look at 2 centre cards or 1 player card',
+            globalInstructions: 'Seer, wake up and look at 2 centre cards or 1 player card',
+            canInteract: 'both',
         });
+
+        this.checkLimit = {
+            both: 1,
+            player: 1,
+            centre: 2,
+        };
     }
 
     doTurn(client, gameRoom) {
-        let hasChecked = false;
+        let cardsChecked = 0;
+        let checkType = 'both';
 
         client.send(JSON.stringify({
             type: 'wake-up',
             data: {
-                othersAwake: gameRoom.awakePlayers.map((other, index) => {
-                    if (other.id !== client.id) {
-                        return other.username;
-                    }
-                }),
+                othersAwake: [null],
                 turnInstructions: this.turnInstructions,
-                canInteract: gameRoom.awakePlayers.length > 1 ? 'none' : 'centre',
+                canInteract: this.canInteract,
             },
         }));
 
@@ -34,9 +37,10 @@ class Werewolf extends Card {
 
             switch (message.type) {
                 case 'check-card':
-                    if (hasChecked) break;
+                    if (cardsChecked >= this.checkLimit[checkType]) break;
                     if (message.data.centre) {
-                        hasChecked = true;
+                        checkType = 'centre';
+                        cardsChecked++;
 
                         client.send(JSON.stringify({
                             type: 'show-card',
@@ -53,4 +57,4 @@ class Werewolf extends Card {
     }
 }
 
-module.exports = Werewolf;
+module.exports = Seer;

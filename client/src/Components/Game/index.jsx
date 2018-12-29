@@ -27,6 +27,7 @@ class Game extends React.Component {
                             'You are alone!'
                         ),
                         turnInstructions: message.data.turnInstructions,
+                        canInteract: message.data.canInteract,
                     });
                     break;
                 case 'go-sleep':
@@ -61,6 +62,7 @@ class Game extends React.Component {
             turnInstructions: '',
             night: true,
             centreCards: [null, null, null, null],
+            canInteract: 'none',
         };
     }
 
@@ -85,7 +87,7 @@ class Game extends React.Component {
                             null
                         )}
                         {this.state.centreCards.map((cardName, index) => (
-                            <CentreCard cardName={cardName} cardNum={index} onClick={this.checkCard} />
+                            <CentreCard canInteract={this.state.canInteract} cardName={cardName} cardNum={index} onClick={this.checkCard} />
                         ))}
                     </div>
                 )}

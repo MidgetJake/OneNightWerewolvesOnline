@@ -48,25 +48,15 @@ class GameRoom {
             this.sendMessageToAll(JSON.stringify({ type: 'turn-text', data: { text: turnOrder[turn.toString()][0].globalInstructions } }));
 
             console.log(turn, turnOrder[turn.toString()].length);
-            const awakePlayers = [];
+            this.awakePlayers = [];
             for (let cards of turnOrder[turn.toString()]) {
                 if (cards.player !== null) {
-                    awakePlayers.push(cards.player);
+                    this.awakePlayers.push(cards.player);
                 }
             }
 
-            for (let i = 0; i < awakePlayers.length; i++) {
-                awakePlayers[i].send(JSON.stringify({
-                    type: 'wake-up',
-                    data: {
-                        othersAwake: awakePlayers.map((other, index) => {
-                            if (index !== i) {
-                                return other.username;
-                            }
-                        }),
-                        turnInstructions: turnOrder[turn.toString()][0].turnInstructions,
-                    },
-                }));
+            for (let i = 0; i < this.awakePlayers.length; i++) {
+                turnOrder[turn.toString()][0].doTurn(this.awakePlayers[i], this);
             }
 
             setTimeout(() => {
@@ -80,7 +70,7 @@ class GameRoom {
                 if (turn <= 25) {
                     this.makeGameTurn(turnOrder, ++turn);
                 }
-            }, 5000);
+            }, 7500);
         }, 1500);
     }
 
@@ -184,9 +174,9 @@ class GameRoom {
                     if (!client.host) break;
                     this.startGame();
                     break;
-                case 'check-card':
+                /*case 'check-card':
                     client.send(JSON.stringify({ type: 'show-card', data: { id: message.data.id, cardName: this.centreCards[message.data.id].name } }));
-                    break;
+                    break;*/
             }
         });
 
