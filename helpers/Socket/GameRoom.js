@@ -184,6 +184,9 @@ class GameRoom {
                     if (!client.host) break;
                     this.startGame();
                     break;
+                case 'check-card':
+                    client.send(JSON.stringify({ type: 'show-card', data: { id: message.data.id, cardName: this.centreCards[message.data.id].name } }));
+                    break;
             }
         });
 

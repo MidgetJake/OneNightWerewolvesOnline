@@ -3,6 +3,8 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import style from './style';
 
 import Blindfold from './Blindfold';
+import CentreCard from 'Components/Game/Card/Centre';
+import Typography from '@material-ui/core/Typography';
 
 class Game extends React.Component {
     constructor(props) {
@@ -39,6 +41,12 @@ class Game extends React.Component {
                 case 'card-assign':
                     this.setState({ turnText: message.data.card });
                     break;
+                case 'show-card':
+                    this.setState(state => {
+                        state.centreCards[message.data.id] = message.data.cardName;
+                        return state;
+                    });
+                    break;
             }
         };
 
@@ -51,17 +59,36 @@ class Game extends React.Component {
             turnText: 'Wait to be assigned a card',
             awakeMessage: '',
             turnInstructions: '',
+            night: true,
+            centreCards: [null, null, null, null],
         };
     }
+
+    checkCard = (centreCard, id) => {
+        if (!this.state.night) return;
+        this.socket.send(JSON.stringify({ type: 'check-card', data: { centre: centreCard, id } }));
+    };
 
     render() {
         const { classes } = this.props;
 
         return (
             <div className={classes.root}>
-                {this.state.turnInstructions}
-                {this.state.awakeMessage}
-                {this.state.blinded ? <Blindfold text={this.state.turnText}/> : null}
+                {this.state.blinded ? <Blindfold text={this.state.turnText}/> : (
+                    <div>
+                        {this.state.night ? (
+                            <div>
+                                <Typography>{this.state.turnInstructions}</Typography>
+                                <Typography>{this.state.awakeMessage}</Typography>
+                            </div>
+                        ) : (
+                            null
+                        )}
+                        {this.state.centreCards.map((cardName, index) => (
+                            <CentreCard cardName={cardName} cardNum={index} onClick={this.checkCard} />
+                        ))}
+                    </div>
+                )}
             </div>
         );
     }
