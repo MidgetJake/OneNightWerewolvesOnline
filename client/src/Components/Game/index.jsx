@@ -15,7 +15,17 @@ class Game extends React.Component {
 
             switch (message.type) {
                 case 'wake-up':
-                    this.setState({ blinded: false });
+                    this.setState({
+                        blinded: false,
+                        awakeMessage: message.data.othersAwake.length > 1 ? (
+                            'Others awake: ' + message.data.othersAwake.reduce((accumulator, currentVal) => (
+                                currentVal !== null ? accumulator + ' ' + currentVal : accumulator
+                            ), '')
+                        ) : (
+                            'You are alone!'
+                        ),
+                        turnInstructions: message.data.turnInstructions,
+                    });
                     break;
                 case 'go-sleep':
                     this.setState({ blinded: true });
@@ -39,6 +49,8 @@ class Game extends React.Component {
             blinded: true,
             info: null,
             turnText: 'Wait to be assigned a card',
+            awakeMessage: '',
+            turnInstructions: '',
         };
     }
 
@@ -47,6 +59,8 @@ class Game extends React.Component {
 
         return (
             <div className={classes.root}>
+                {this.state.turnInstructions}
+                {this.state.awakeMessage}
                 {this.state.blinded ? <Blindfold text={this.state.turnText}/> : null}
             </div>
         );

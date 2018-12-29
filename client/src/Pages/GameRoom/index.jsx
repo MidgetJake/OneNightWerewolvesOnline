@@ -42,11 +42,13 @@ class GameRoom extends React.Component {
             cards: [
                 { card: 'Werewolf', name: 'Werewolf1', active: false },
                 { card: 'Werewolf', name: 'Werewolf2', active: false },
+                { card: 'Dream Wolf', name: 'DreamWolf', active: false },
                 { card: 'Villager', name: 'Villager1', active: false },
                 { card: 'Villager', name: 'Villager2', active: false },
                 { card: 'Villager', name: 'Villager3', active: false },
                 { card: 'Mason', name: 'Mason1', active: false },
                 { card: 'Mason', name: 'Mason2', active: false },
+                { card: 'Tanner', name: 'Tanner', active: false },
             ],
         };
     }

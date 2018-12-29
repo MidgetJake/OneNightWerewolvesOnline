@@ -4,15 +4,13 @@ const CardList = require('../Cards/CardList');
 // This class will handle what is needed for the game room to function
 class GameRoom {
     constructor(roomname, hostname, data = {}) {
-        // The chances of this roomhash already existing is basically impossible...
-        // this.roomhash = bcrypt.hashSync(hostname + roomname + Math.floor((Math.random() * 46656)) + new Date().toDateString(), '', null);
-        // this.roomhash = this.roomhash.replace(/[^a-zA-Z]/g, '');
         this.roomhash = shortid.generate();
 
         console.log('--[ WS ROOM CREATION ]-- Creating new room:', this.roomhash);
 
         this.password = data.password || null;
         this.players = [];
+        this.idCount = 0;
         this.maxPlayers = data.maxPlayers || 16;
         this.cardsInPlay = [];
         this.inProgress = false;
@@ -43,16 +41,32 @@ class GameRoom {
             }
 
             if (turn > 25) {
+                this.sendMessageToAll(JSON.stringify({ type: 'end-night' }));
                 return;
             }
 
             this.sendMessageToAll(JSON.stringify({ type: 'turn-text', data: { text: turnOrder[turn.toString()][0].globalInstructions } }));
 
             console.log(turn, turnOrder[turn.toString()].length);
+            const awakePlayers = [];
             for (let cards of turnOrder[turn.toString()]) {
                 if (cards.player !== null) {
-                    cards.player.send(JSON.stringify({ type: 'wake-up' }));
+                    awakePlayers.push(cards.player);
                 }
+            }
+
+            for (let i = 0; i < awakePlayers.length; i++) {
+                awakePlayers[i].send(JSON.stringify({
+                    type: 'wake-up',
+                    data: {
+                        othersAwake: awakePlayers.map((other, index) => {
+                            if (index !== i) {
+                                return other.username;
+                            }
+                        }),
+                        turnInstructions: turnOrder[turn.toString()][0].turnInstructions,
+                    },
+                }));
             }
 
             setTimeout(() => {
@@ -71,20 +85,19 @@ class GameRoom {
     }
 
     startGame() {
-        if (this.players.length < 3 || this.players.length > this.cardsInPlay.length - 4) {
+        if (this.players.length < 3 || this.players.length !== this.cardsInPlay.length - 4) {
             return this.sendMessageToHost(JSON.stringify({ type: 'failed-game-start', data: { reason: 'Not enough players' } }));
         }
 
         this.inProgress = true;
         this.sendMessageToAll(JSON.stringify({ type: 'game-start' }));
 
+        // Shuffle the cards
         const cardList = this.cardsInPlay;
         for (let i = cardList.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [cardList[i], cardList[j]] = [cardList[j], cardList[i]];
         }
-
-        console.log(cardList);
 
         for (let i = 0; i < this.players.length; i++) {
             console.log(cardList[i].name);
@@ -107,12 +120,9 @@ class GameRoom {
             }
         }
 
-        console.log(turnOrder);
-
         setTimeout(() => {
             this.makeGameTurn(turnOrder, 0);
-            console.log('Game Over!');
-        }, 15000);
+        }, 7500);
     }
 
     // Disconnect the client from the room
@@ -144,7 +154,7 @@ class GameRoom {
             return client.send(JSON.stringify({ type: 'connection-failed', data: { reason: 'Game is in progress' } }));
         }
 
-        client.id = this.players.length;
+        client.id = this.idCount++;
         client.host = this.players.length === 0;
         this.players.push(client);
 
