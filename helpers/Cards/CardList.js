@@ -14,4 +14,10 @@ const CardList = {
     Seer,
 };
 
-module.exports = CardList;
+const CardOrder = {
+    2: Werewolf,
+    6: Mason,
+    7: Seer,
+};
+
+module.exports = { CardList, CardOrder };

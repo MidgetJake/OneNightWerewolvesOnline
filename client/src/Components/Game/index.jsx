@@ -21,7 +21,7 @@ class Game extends React.Component {
                         blinded: false,
                         awakeMessage: message.data.othersAwake.length > 1 ? (
                             'Others awake: ' + message.data.othersAwake.reduce((accumulator, currentVal) => (
-                                currentVal !== null ? accumulator + ' ' + currentVal : accumulator
+                                currentVal !== null ? accumulator + ' ' + currentVal.type + '(' + currentVal.username + ')' : accumulator
                             ), '')
                         ) : (
                             'You are alone!'
@@ -29,6 +29,9 @@ class Game extends React.Component {
                         turnInstructions: message.data.turnInstructions,
                         canInteract: message.data.canInteract,
                     });
+                    break;
+                case 'stay-asleep':
+                    this.setState({ blinded: true, turnText: message.data.turnInstructions });
                     break;
                 case 'go-sleep':
                     this.setState({ blinded: true });

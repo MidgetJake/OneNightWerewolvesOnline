@@ -5,7 +5,7 @@ class Mason extends Card {
         super({
             name: 'Mason',
             clientName,
-            turn: 5,
+            turn: 6,
             actionDesc: 'You will know who the other Masons are.',
             turnInstructions: 'You can now see the other Masons',
             globalInstructions: 'Masons, wake up and see the other Masons',
@@ -18,7 +18,7 @@ class Mason extends Card {
             data: {
                 othersAwake: gameRoom.awakePlayers.map((other, index) => {
                     if (other.id !== client.id) {
-                        return other.username;
+                        return { type: other.card.name, username: other.username };
                     }
                 }),
                 turnInstructions: this.turnInstructions,

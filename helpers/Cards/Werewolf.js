@@ -21,7 +21,7 @@ class Werewolf extends Card {
             data: {
                 othersAwake: gameRoom.awakePlayers.map((other, index) => {
                     if (other.id !== client.id) {
-                        return other.username;
+                        return { type: other.card.name, username: other.username };
                     }
                 }),
                 turnInstructions: this.turnInstructions,

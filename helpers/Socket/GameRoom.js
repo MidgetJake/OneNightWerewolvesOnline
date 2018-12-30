@@ -1,5 +1,5 @@
 const shortid = require('shortid');
-const CardList = require('../Cards/CardList');
+const { CardList, CardOrder } = require('../Cards/CardList');
 
 // This class will handle what is needed for the game room to function
 class GameRoom {
@@ -45,7 +45,7 @@ class GameRoom {
                 return;
             }
 
-            this.sendMessageToAll(JSON.stringify({ type: 'turn-text', data: { text: turnOrder[turn.toString()][0].globalInstructions } }));
+            this.sendMessageToAll(JSON.stringify({ type: 'turn-text', data: { text: CardOrder[turn.toString()].globalInstructions } }));
 
             console.log(turn, turnOrder[turn.toString()].length);
             this.awakePlayers = [];
@@ -56,7 +56,7 @@ class GameRoom {
             }
 
             for (let i = 0; i < this.awakePlayers.length; i++) {
-                turnOrder[turn.toString()][0].doTurn(this.awakePlayers[i], this);
+                this.awakePlayers[i].card.doTurn(this.awakePlayers[i], this);
             }
 
             setTimeout(() => {
@@ -93,7 +93,7 @@ class GameRoom {
             console.log(cardList[i].name);
             this.players[i].send(JSON.stringify({ type: 'card-assign', data: { card: cardList[i].name } }));
             cardList[i].player = this.players[i];
-            this.players[i].card = cardList[i].name;
+            this.players[i].card = cardList[i];
         }
 
         for (let i = 0; i < 4; i++) {
