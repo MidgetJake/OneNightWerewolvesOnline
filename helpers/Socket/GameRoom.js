@@ -15,6 +15,9 @@ class GameRoom {
         this.cardsInPlay = [];
         this.inProgress = false;
         this.centreCards = [];
+        this.playerCards = {};
+        this.turn = 0;
+        this.blockedPlayer = false;
     }
 
     addCard(card) {
@@ -32,7 +35,6 @@ class GameRoom {
     makeGameTurn(turnOrder, turn) {
         this.sendMessageToAll(JSON.stringify({ type: 'go-sleep' }));
         setTimeout(() => {
-            console.log(turn);
             while (!turnOrder.hasOwnProperty(turn.toString())) {
                 turn++;
                 if (turn > 25) {
@@ -41,13 +43,13 @@ class GameRoom {
             }
 
             if (turn > 25) {
-                this.sendMessageToAll(JSON.stringify({ type: 'end-night' }));
+                this.sendMessageToAll(JSON.stringify({ type: 'end-night', data: { blockedPlayer: this.blockedPlayer, } }));
                 return;
             }
 
+            this.turn = turn;
             this.sendMessageToAll(JSON.stringify({ type: 'turn-text', data: { text: CardOrder[turn.toString()].globalInstructions } }));
 
-            console.log(turn, turnOrder[turn.toString()].length);
             this.awakePlayers = [];
             for (let cards of turnOrder[turn.toString()]) {
                 if (cards.player !== null) {
@@ -60,7 +62,6 @@ class GameRoom {
             }
 
             setTimeout(() => {
-                console.log('Turn done!');
                 for (let cards of turnOrder[turn.toString()]) {
                     if (cards.player !== null) {
                         cards.player.send(JSON.stringify({ type: 'go-sleep' }));
@@ -80,7 +81,14 @@ class GameRoom {
         }
 
         this.inProgress = true;
-        this.sendMessageToAll(JSON.stringify({ type: 'game-start' }));
+        this.sendMessageToAll(JSON.stringify({
+            type: 'game-start',
+            data: {
+                players: this.players.map(
+                    player => ({ cardName: '', username: player.username, id: player.id })
+                ),
+            },
+        }));
 
         // Shuffle the cards
         const cardList = this.cardsInPlay;
@@ -91,9 +99,10 @@ class GameRoom {
 
         for (let i = 0; i < this.players.length; i++) {
             console.log(cardList[i].name);
-            this.players[i].send(JSON.stringify({ type: 'card-assign', data: { card: cardList[i].name } }));
+            this.players[i].send(JSON.stringify({ type: 'card-assign', data: { card: cardList[i].name, id: this.players[i].id } }));
             cardList[i].player = this.players[i];
             this.players[i].card = cardList[i];
+            this.playerCards[this.players[i].id] = cardList[i].name;
         }
 
         for (let i = 0; i < 4; i++) {
@@ -108,7 +117,19 @@ class GameRoom {
             } else {
                 turnOrder[card.turn.toString()] = [card];
             }
+
+            if (card.extraTurns) {
+                for (let extraTurn of card.extraTurns) {
+                    if (turnOrder.hasOwnProperty(extraTurn.toString())) {
+                        turnOrder[extraTurn.toString()].push(card);
+                    } else {
+                        turnOrder[extraTurn.toString()] = [card];
+                    }
+                }
+            }
         }
+
+        console.log(turnOrder);
 
         setTimeout(() => {
             this.makeGameTurn(turnOrder, 0);

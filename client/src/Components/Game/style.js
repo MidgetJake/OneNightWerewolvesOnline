@@ -3,4 +3,10 @@ export default theme => ({
         width: '100vw',
         height: '100vh',
     },
+    centreCards: {
+        display: 'flex',
+    },
+    playerCards: {
+        display: 'flex',
+    },
 });

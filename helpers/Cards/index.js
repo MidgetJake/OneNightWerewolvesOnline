@@ -9,6 +9,27 @@ class Card {
         this.globalInstructions = data.globalInstructions || 'Stay asleep';
         this.canInteract = data.canInteract || 'none';
         this.player = null;
+        this.checkLimit = data.checkLimit || { both: 0, centre: 0, player: 0 };
+        this.extraTurns = data.extraTurns || false;
+        this.blocked = false;
+    }
+
+    wakeUp(client, gameRoom) {
+        client.send(JSON.stringify({
+            type: 'wake-up',
+            data: {
+                othersAwake: gameRoom.awakePlayers.map((other, index) => {
+                    if (other.id !== client.id) {
+                        return { type: other.card.name, username: other.username, id: other.id };
+                    } else {
+                        return { type: other.card.name, username: other.username + ' (You)', id: other.id };
+                    }
+                }),
+                turnInstructions: this.turnInstructions,
+                canInteract: this.canInteract,
+                blockedPlayer: gameRoom.blockedPlayer,
+            },
+        }));
     }
 }
 

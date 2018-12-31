@@ -13,18 +13,7 @@ class Mason extends Card {
     }
 
     doTurn(client, gameRoom) {
-        client.send(JSON.stringify({
-            type: 'wake-up',
-            data: {
-                othersAwake: gameRoom.awakePlayers.map((other, index) => {
-                    if (other.id !== client.id) {
-                        return { type: other.card.name, username: other.username };
-                    }
-                }),
-                turnInstructions: this.turnInstructions,
-                canInteract: this.canInteract,
-            },
-        }));
+        this.wakeUp(client, gameRoom);
     }
 }
 

@@ -20,17 +20,9 @@ class Seer extends Card {
     }
 
     doTurn(client, gameRoom) {
+        this.wakeUp(client, gameRoom);
         let cardsChecked = 0;
         let checkType = 'both';
-
-        client.send(JSON.stringify({
-            type: 'wake-up',
-            data: {
-                othersAwake: [null],
-                turnInstructions: this.turnInstructions,
-                canInteract: this.canInteract,
-            },
-        }));
 
         client.on('message', rawmsg => {
             const message = JSON.parse(rawmsg);
@@ -40,16 +32,20 @@ class Seer extends Card {
                     if (cardsChecked >= this.checkLimit[checkType]) break;
                     if (message.data.centre) {
                         checkType = 'centre';
-                        cardsChecked++;
-
-                        client.send(JSON.stringify({
-                            type: 'show-card',
-                            data: {
-                                id: message.data.id,
-                                cardName: gameRoom.centreCards[message.data.id].name,
-                            },
-                        }));
+                    } else {
+                        checkType = 'player';
+                        if (gameRoom.blockedPlayer === message.data.id) break;
                     }
+
+                    cardsChecked++;
+                    client.send(JSON.stringify({
+                        type: 'show-card',
+                        data: {
+                            id: message.data.id,
+                            centre: checkType === 'centre',
+                            cardName: gameRoom[checkType + 'Cards'][message.data.id.toString()],
+                        },
+                    }));
 
                     break;
             }

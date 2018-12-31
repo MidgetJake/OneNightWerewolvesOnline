@@ -39,17 +39,24 @@ class GameRoom extends React.Component {
             usernames: [],
             isHost: false,
             game: false,
+            players: [],
             cards: [
                 { card: 'Werewolf', name: 'Werewolf1', active: false },
                 { card: 'Werewolf', name: 'Werewolf2', active: false },
                 { card: 'Dream Wolf', name: 'DreamWolf', active: false },
+                { card: 'Mystic Wolf', name: 'MysticWolf', active: false },
+                { card: 'Minion', name: 'Minion', active: false },
                 { card: 'Villager', name: 'Villager1', active: false },
                 { card: 'Villager', name: 'Villager2', active: false },
                 { card: 'Villager', name: 'Villager3', active: false },
                 { card: 'Mason', name: 'Mason1', active: false },
                 { card: 'Mason', name: 'Mason2', active: false },
-                { card: 'Tanner', name: 'Tanner', active: false },
                 { card: 'Seer', name: 'Seer', active: false },
+                { card: 'Apprentice Seer', name: 'ApprenticeSeer', active: false },
+                { card: 'Sentinel', name: 'Sentinel', active: false },
+                { card: 'Sentinel', name: 'Sentinel2', active: false },
+                { card: 'Sentinel', name: 'Sentinel3', active: false },
+                { card: 'Tanner', name: 'Tanner', active: false },
             ],
         };
     }
@@ -145,7 +152,7 @@ class GameRoom extends React.Component {
                             });
                             break;
                         case 'game-start':
-                            this.setState({ game: true });
+                            this.setState({ game: true, players: message.data.players });
                             break;
                     }
                 };
@@ -182,7 +189,7 @@ class GameRoom extends React.Component {
                 ) : !this.state.roomExists ? (
                     <Typography>Room does not exist!</Typography>
                 ) : this.state.game ? (
-                    <Game socket={this.connection}/>
+                    <Game players={this.state.players} socket={this.connection}/>
                 ) : (
                     <Card className={classes.gameBack}>
                         <PlayerList players={this.state.usernames}/>
