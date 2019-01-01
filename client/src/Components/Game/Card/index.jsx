@@ -7,7 +7,7 @@ import ButtonBase from '@material-ui/core/ButtonBase';
 import Typography from '@material-ui/core/Typography';
 import classnames from 'classnames';
 
-class CentreCard extends React.Component {
+class GameCard extends React.Component {
     constructor(props) {
         super(props);
 
@@ -19,12 +19,18 @@ class CentreCard extends React.Component {
             centre: this.props.centre | false,
             blocked: this.props.blocked | false,
             cardType: this.props.centre ? 'centre' : 'player',
+            votes: this.props.votes | 0,
+            isGame: this.props.isGame | false,
         };
     }
 
     handleClick = () => {
-        if ((this.state.canInteract !== 'none' && this.state.cardType === this.state.canInteract) || this.state.canInteract === 'both') {
-            this.props.onClick(this.state.centre, this.props.id);
+        if (!this.state.isGame) {
+            if ((this.state.canInteract !== 'none' && this.state.cardType === this.state.canInteract) || this.state.canInteract === 'both') {
+                this.props.onClick(this.state.centre, this.props.id);
+            }
+        } else {
+            this.props.onClick(null, this.state.centre ? 'centre' : this.props.id);
         }
     };
 
@@ -33,6 +39,8 @@ class CentreCard extends React.Component {
             cardText: nextProps.cardName,
             canInteract: nextProps.canInteract,
             blocked: nextProps.blocked,
+            votes: nextProps.votes,
+            isGame: nextProps.isGame
         };
     }
 
@@ -42,12 +50,15 @@ class CentreCard extends React.Component {
         return (
             <Card className={classnames(classes.root, { [classes.blocked]: this.state.blocked })}>
                 <ButtonBase focusRipple className={classes.cardButton} onClick={this.handleClick}>
-                    <Typography>{this.state.cardName}</Typography>
+                    <Typography>{this.state.cardName}{this.props.isSelf ? ' (You)' : null}</Typography>
                     <Typography>{this.state.cardText}</Typography>
+                    {this.state.isGame ? (
+                        <Typography>Votes: {this.state.votes}</Typography>
+                    ) : ( null )}
                 </ButtonBase>
             </Card>
         );
     }
 }
 
-export default withStyles(style)(CentreCard);
+export default withStyles(style)(GameCard);
