@@ -1,25 +1,33 @@
 const Werewolf = require('./Werewolf');
-const Mason = require('./Mason');
-const Villager = require('./VIllager');
 const Tanner = require('./Tanner');
+const Mason = require('./Mason');
+const Villager = require('./Villager');
 const DreamWolf = require('./DreamWolf');
 const Seer = require('./Seer');
 const ApprenticeSeer = require('./ApprenticeSeer');
 const MysticWolf = require('./MysticWolf');
 const Minion = require('./Minion');
 const Sentinel = require('./Sentinel');
+const Robber = require('./Robber');
+const Drunk = require('./Drunk');
+const Witch = require('./Witch');
+const Insomniac = require('./Insomniac');
 
 const CardList = {
     Villager,
+    Tanner,
     Mason,
     Werewolf,
-    Tanner,
     'Dream Wolf': DreamWolf,
     Seer,
     'Apprentice Seer': ApprenticeSeer,
     'Mystic Wolf': MysticWolf,
     Minion,
     Sentinel,
+    Robber,
+    Drunk,
+    Witch,
+    Insomniac
 };
 
 const CardOrder = {
@@ -30,6 +38,10 @@ const CardOrder = {
     '6': new Mason(),
     '7': new Seer(),
     '8': new ApprenticeSeer(),
+    '10': new Robber(),
+    '11': new Witch(),
+    '14': new Drunk(),
+    '15': new Insomniac(),
 };
 
 module.exports = { CardList, CardOrder };

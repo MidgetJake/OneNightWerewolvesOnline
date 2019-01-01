@@ -3,8 +3,7 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import style from './style';
 
 import Blindfold from './Blindfold';
-import CentreCard from 'Components/Game/Card/Centre';
-import PlayerCard from 'Components/Game/Card/Player';
+import GameCard from 'Components/Game/Card';
 import Typography from '@material-ui/core/Typography';
 
 class Game extends React.Component {
@@ -78,6 +77,12 @@ class Game extends React.Component {
                     });
                     break;
                 case 'end-night':
+                    const playerVotes = { centre: 0 };
+
+                    this.props.players.map(player => {
+                        playerVotes[player.id] = 0;
+                    });
+
                     this.setState({
                         blinded: false,
                         night: false,
@@ -89,6 +94,7 @@ class Game extends React.Component {
                                 return player;
                             }
                         }),
+                        votes: playerVotes,
                     });
                     break;
                 case 'show-blocked':
@@ -101,6 +107,9 @@ class Game extends React.Component {
                             }
                         }),
                     });
+                    break;
+                case 'vote-update':
+                    this.setState({ votes: message.data.votes });
                     break;
             }
         };
@@ -118,15 +127,20 @@ class Game extends React.Component {
             night: true,
             centreCards: [null, null, null, null],
             canInteract: 'none',
+            lastVoteID: null,
+            votes: {},
         };
     }
 
     checkCard = (centreCard, id) => {
-        if (!this.state.night) return;
-        this.socket.send(JSON.stringify({ type: 'check-card', data: { centre: centreCard, id } }));
+        if (this.state.night) {
+            this.socket.send(JSON.stringify({type: 'check-card', data: {centre: centreCard, id}}));
+        } else {
+            this.socket.send(JSON.stringify({ type: 'vote-player', data: { id, removeVote: this.state.lastVoteID } }));
+            this.setState({ lastVoteID: id });
+        }
     };
 
-    // ToDo: Merge the PlayerCard and CentreCard into a single Component, should be pretty easy
     render() {
         const { classes } = this.props;
 
@@ -144,12 +158,30 @@ class Game extends React.Component {
                         )}
                         <div className={classes.centreCards}>
                             {this.state.centreCards.map((cardName, index) => (
-                                <CentreCard centre canInteract={this.state.canInteract} cardName={cardName} id={index} onClick={this.checkCard} />
+                                <GameCard
+                                    votes={this.state.votes['centre']}
+                                    isGame={!this.state.night}
+                                    centre
+                                    canInteract={this.state.canInteract}
+                                    cardName={cardName}
+                                    id={index}
+                                    onClick={this.checkCard}
+                                />
                             ))}
                         </div>
                         <div className={classes.playerCards}>
                             {this.state.players.map(player => (
-                                <CentreCard blocked={player.blocked} canInteract={this.state.canInteract} cardName={player.cardName} username={player.username} id={player.id} onClick={this.checkCard} />
+                                <GameCard
+                                    isSelf={this.state.ownID === player.id}
+                                    votes={this.state.votes[player.id]}
+                                    isGame={!this.state.night}
+                                    blocked={player.blocked}
+                                    canInteract={this.state.canInteract}
+                                    cardName={player.cardName}
+                                    username={player.username}
+                                    id={player.id}
+                                    onClick={this.checkCard}
+                                />
                             ))}
                         </div>
                     </div>

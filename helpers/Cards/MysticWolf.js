@@ -17,7 +17,7 @@ class Werewolf extends Card {
 
     doTurn(client, gameRoom) {
         if (gameRoom.turn === 5) return;
-        this.wakeUp(client, gameRoom);
+        this.wakeUp(client, gameRoom, true);
         let hasChecked = false;
 
         if (gameRoom.turn !== 4) return;

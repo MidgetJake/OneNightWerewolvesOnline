@@ -20,7 +20,7 @@ class Seer extends Card {
     }
 
     doTurn(client, gameRoom) {
-        this.wakeUp(client, gameRoom);
+        this.wakeUp(client, gameRoom, true);
         let cardsChecked = 0;
         let checkType = 'both';
 

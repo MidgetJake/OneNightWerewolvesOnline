@@ -20,7 +20,7 @@ class ApprenticeSeer extends Card {
     }
 
     doTurn(client, gameRoom) {
-        this.wakeUp(client, gameRoom);
+        this.wakeUp(client, gameRoom, true);
         let cardsChecked = 0;
 
         client.on('message', rawmsg => {

@@ -15,7 +15,7 @@ class Sentinel extends Card {
     }
 
     doTurn(client, gameRoom) {
-        this.wakeUp(client, gameRoom);
+        this.wakeUp(client, gameRoom, true);
         let hasChecked = false;
 
         client.on('message', rawmsg => {

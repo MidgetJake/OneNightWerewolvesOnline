@@ -54,9 +54,11 @@ class GameRoom extends React.Component {
                 { card: 'Seer', name: 'Seer', active: false },
                 { card: 'Apprentice Seer', name: 'ApprenticeSeer', active: false },
                 { card: 'Sentinel', name: 'Sentinel', active: false },
-                { card: 'Sentinel', name: 'Sentinel2', active: false },
-                { card: 'Sentinel', name: 'Sentinel3', active: false },
                 { card: 'Tanner', name: 'Tanner', active: false },
+                { card: 'Robber', name: 'Robber', active: false },
+                { card: 'Witch', name: 'Witch', active: false },
+                { card: 'Drunk', name: 'Drunk', active: false },
+                { card: 'Insomniac', name: 'Insomniac', active: false },
             ],
         };
     }

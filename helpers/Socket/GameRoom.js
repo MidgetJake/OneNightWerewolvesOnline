@@ -15,6 +15,7 @@ class GameRoom {
         this.cardsInPlay = [];
         this.inProgress = false;
         this.centreCards = [];
+        this.playerVotes = {};
         this.playerCards = {};
         this.turn = 0;
         this.blockedPlayer = false;
@@ -34,6 +35,7 @@ class GameRoom {
 
     makeGameTurn(turnOrder, turn) {
         this.sendMessageToAll(JSON.stringify({ type: 'go-sleep' }));
+
         setTimeout(() => {
             while (!turnOrder.hasOwnProperty(turn.toString())) {
                 turn++;
@@ -42,8 +44,27 @@ class GameRoom {
                 }
             }
 
+            let hasMinion = false;
+            if(turn === 5) {
+                for (let role of turnOrder[turn.toString()]) {
+                    console.log(role);
+                    if (role.name === 'Minion') {
+                        hasMinion = true;
+                        break;
+                    }
+                }
+                if (!hasMinion) turn = 6;
+                while (!turnOrder.hasOwnProperty(turn.toString())) {
+                    turn++;
+                    if (turn > 25) {
+                        break;
+                    }
+                }
+            }
+
             if (turn > 25) {
                 this.sendMessageToAll(JSON.stringify({ type: 'end-night', data: { blockedPlayer: this.blockedPlayer, } }));
+                this.votePhase();
                 return;
             }
 
@@ -73,6 +94,28 @@ class GameRoom {
                 }
             }, 7500);
         }, 1500);
+    }
+
+    votePhase() {
+        this.playerVotes = { 'centre': 0 };
+
+        for (let client of this.players) {
+            this.playerVotes[client.id] = 0;
+            client.on('message', rawmsg => {
+                const message = JSON.parse(rawmsg);
+                console.log(message);
+
+                switch (message.type) {
+                    case 'vote-player':
+                        this.playerVotes[message.data.id]++;
+                        if (message.data.removeVote !== null) {
+                            this.playerVotes[message.data.removeVote]--;
+                        }
+                        this.sendMessageToAll(JSON.stringify({ type: 'vote-update', data: { votes: this.playerVotes } }));
+                        break;
+                }
+            })
+        }
     }
 
     startGame() {
@@ -128,8 +171,6 @@ class GameRoom {
                 }
             }
         }
-
-        console.log(turnOrder);
 
         setTimeout(() => {
             this.makeGameTurn(turnOrder, 0);

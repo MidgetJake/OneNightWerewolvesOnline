@@ -13,6 +13,8 @@ export default theme => ({
     cardButton: {
         padding: 15,
         flexGrow: 1,
+        display: 'flex',
+        flexDirection: 'column',
     },
     blocked: {
         background: '#983',
