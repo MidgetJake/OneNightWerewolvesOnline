@@ -32,9 +32,10 @@ module.exports = function() {
 
         roomPlayers: function(req, res) {
             if (WebSocket.rooms.hasOwnProperty(req.params.roomhash)) {
+                const playerList = WebSocket.rooms[req.params.roomhash].playerData.players;
                 return res.json({
-                    success: true, players: WebSocket.rooms[req.params.roomhash].players.map(player => (
-                        { username: player.username, host: player.host })
+                    success: true, players: Object.keys(playerList).map(clientID => (
+                        { username: playerList[clientID].username, host: playerList[clientID].host })
                     ),
                 });
             } else {

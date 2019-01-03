@@ -73,7 +73,7 @@ class Index {
         const aliveRooms = {};
         for (let room in this.rooms) {
             if (!this.rooms.hasOwnProperty(room)) continue;
-            if (this.rooms[room].players.length > 0) {
+            if (this.rooms[room].playerData.playerCount > 0) {
                 aliveRooms[room] = this.rooms[room];
             }
         }

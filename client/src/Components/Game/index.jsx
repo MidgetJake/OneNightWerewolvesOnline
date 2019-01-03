@@ -26,7 +26,7 @@ class Game extends React.Component {
                         if (player === null) continue;
                         for (let i = 0; i < players.length; i++) {
                             players[i].blocked = players[i].id === message.data.blockedPlayer;
-                            if (players[i].id !== player.id) continue;
+                            if (players[i].id !== player.id.toString()) continue;
                             players[i].cardName = player.type;
                             players[i].username = player.username;
                         }
@@ -63,7 +63,7 @@ class Game extends React.Component {
                     this.setState({ turnText: message.data.text });
                     break;
                 case 'card-assign':
-                    this.setState({ turnText: message.data.card, ownID: message.data.id });
+                    this.setState({ turnText: message.data.card, ownID: message.data.id.toString() });
                     break;
                 case 'show-card':
                     this.setState(state => {
@@ -163,7 +163,7 @@ class Game extends React.Component {
                                     isGame={!this.state.night}
                                     centre
                                     canInteract={this.state.canInteract}
-                                    cardName={cardName}
+                                    cardText={cardName}
                                     id={index}
                                     onClick={this.checkCard}
                                 />
@@ -177,7 +177,7 @@ class Game extends React.Component {
                                     isGame={!this.state.night}
                                     blocked={player.blocked}
                                     canInteract={this.state.canInteract}
-                                    cardName={player.cardName}
+                                    cardText={player.cardName}
                                     username={player.username}
                                     id={player.id}
                                     onClick={this.checkCard}

@@ -13,7 +13,7 @@ class GameCard extends React.Component {
 
         this.state = {
             cardName: this.props.centre ? this.props.id : this.props.username,
-            cardText: '',
+            cardText: this.props.cardText | '',
             id: this.props.id,
             canInteract: this.props.canInteract,
             centre: this.props.centre | false,
@@ -36,7 +36,7 @@ class GameCard extends React.Component {
 
     static getDerivedStateFromProps(nextProps, prevState) {
         return {
-            cardText: nextProps.cardName,
+            cardText: nextProps.cardText,
             canInteract: nextProps.canInteract,
             blocked: nextProps.blocked,
             votes: nextProps.votes,

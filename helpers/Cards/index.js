@@ -18,18 +18,36 @@ class Card {
         client.send(JSON.stringify({
             type: 'wake-up',
             data: {
-                othersAwake: !alone ? gameRoom.awakePlayers.map((other, index) => {
-                    if (other.id !== client.id) {
-                        return { type: other.card.name, username: other.username, id: other.id };
-                    } else {
-                        return { type: other.card.name, username: other.username + ' (You)', id: other.id };
-                    }
-                }) : [{ type: client.card.name, username: client.username + ' (You)', id: client.id }],
+                othersAwake: gameRoom.awakePlayers.map((other, index) => ({ type: other.card.name, username: other.username, id: other.id })),
                 turnInstructions: this.turnInstructions,
                 canInteract: this.canInteract,
                 blockedPlayer: gameRoom.blockedPlayer,
             },
         }));
+    }
+
+    static isWerewolf(cardName) {
+        switch(cardName) {
+            case 'Werewolf':
+            case 'Mystic Wolf':
+            case 'Dream Wolf':
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    static determineWinner(cardName) {
+        switch(cardName) {
+            case 'Werewolf':
+            case 'Mystic Wolf':
+            case 'Dream Wolf':
+                return 'Village';
+            case 'Tanner':
+                return 'Tanner';
+            default:
+                return 'Werewolf';
+        }
     }
 }
 

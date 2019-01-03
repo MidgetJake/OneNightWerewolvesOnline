@@ -1,5 +1,6 @@
 const shortid = require('shortid');
 const { CardList, CardOrder } = require('../Cards/CardList');
+const Cards = require('../Cards');
 
 // This class will handle what is needed for the game room to function
 class GameRoom {
@@ -8,17 +9,28 @@ class GameRoom {
 
         console.log('--[ WS ROOM CREATION ]-- Creating new room:', this.roomhash);
 
-        this.password = data.password || null;
-        this.players = [];
-        this.idCount = 0;
-        this.maxPlayers = data.maxPlayers || 16;
-        this.cardsInPlay = [];
-        this.inProgress = false;
-        this.centreCards = [];
-        this.playerVotes = {};
-        this.playerCards = {};
-        this.turn = 0;
-        this.blockedPlayer = false;
+        // Currently unused
+        this.password = data.password || null; // Password for the room (null if none)
+        this.public = data.public || false; // Will the room be listed in the public lobby?
+        this.name = roomname; // Name of the room
+        this.turnTime = 7.5; // Time in seconds for each turn
+        this.discussionTime = 3; // Time in minutes until a vote must be made
+
+        // Variables in use
+        this.idCount = 0; // Total number of connections that have been made to the room, easiest way to assign an ID
+        this.maxPlayers = data.maxPlayers || 16; // Max number of players that can be in the room
+        this.cardsInPlay = []; // All cards that are in game (centre & player)
+        this.inProgress = false; // Has the game started?
+        this.centreCards = []; // The 4 centre cards
+        this.turn = 0; // The current turn number
+        this.playerCards = {}; // Key: PlayerID, Value: What card they are
+        this.playerData = {
+            players: {}, // List of all players connected
+            playerCount: 0, // Number of players connected
+        };
+
+        /* This should be used as an array or false (for when doppelganger is added in case of 2 sentinels) */
+        this.blockedPlayer = false; // Player that the sentinel has guarded (False if none)
     }
 
     addCard(card) {
@@ -47,7 +59,6 @@ class GameRoom {
             let hasMinion = false;
             if(turn === 5) {
                 for (let role of turnOrder[turn.toString()]) {
-                    console.log(role);
                     if (role.name === 'Minion') {
                         hasMinion = true;
                         break;
@@ -97,29 +108,107 @@ class GameRoom {
     }
 
     votePhase() {
-        this.playerVotes = { 'centre': 0 };
+        // this.playerVotes = { 'centre': 0 };
+        this.playerData.players.centre = { votes: 0 };
+        let skipCount = 0;
+        const skippers = {};
 
-        for (let client of this.players) {
-            this.playerVotes[client.id] = 0;
-            client.on('message', rawmsg => {
+        for (let clientID in this.playerData.players) {
+            if (!this.playerData.players.hasOwnProperty(clientID) || clientID === 'centre') continue;
+            // this.playerVotes[clientID] = 0;
+            this.playerData.players[clientID].votes = 0;
+            this.playerData.players[clientID].on('message', rawmsg => {
                 const message = JSON.parse(rawmsg);
                 console.log(message);
 
                 switch (message.type) {
                     case 'vote-player':
-                        this.playerVotes[message.data.id]++;
+                        this.playerData.players[message.data.id].votes++;
                         if (message.data.removeVote !== null) {
-                            this.playerVotes[message.data.removeVote]--;
+                            this.playerData.players[message.data.removeVote].votes--;
                         }
-                        this.sendMessageToAll(JSON.stringify({ type: 'vote-update', data: { votes: this.playerVotes } }));
+                        let votes = {};
+                        for (let player in this.playerData.players) {
+                            if (!this.playerData.players.hasOwnProperty(player)) continue;
+                            votes[player] = this.playerData.players[player].votes;
+                        }
+
+                        this.sendMessageToAll(JSON.stringify({ type: 'vote-update', data: { votes } }));
+                        break;
+                    case 'skip-vote-timer':
+                        if (skippers.hasOwnProperty(message.data.id)) {
+                            delete skippers[message.data.id];
+                            skipCount--;
+                        } else {
+                            skippers[message.data.id] = true;
+                            skipCount++;
+                            if (skipCount > this.playerData.playerCount / 2) {
+                                this.endGame();
+                            }
+                        }
                         break;
                 }
             })
         }
+
+        setTimeout(() => {
+            console.log('Ending game');
+            this.endGame();
+        }, this.discussionTime * 60000)
+    }
+
+    endGame() {
+        let highest = [];
+        let highestCount = 0;
+
+        for (let id in this.playerData.players) {
+            if (!this.playerData.players.hasOwnProperty(id)) continue;
+
+            if (this.playerData.players[id].votes > highestCount) {
+                highest = [id];
+                highestCount = this.playerData.players[id].votes;
+            } else if (this.playerData.players[id].votes === highestCount) {
+                highest.push(id);
+            }
+        }
+
+        if (highest.length === 1) {
+            const packet = {
+                type: 'game-complete',
+                data: {
+                    killed: highest[0],
+                    playerCards: this.playerCards,
+                    centreCards: this.centreCards,
+                }
+            };
+
+            if (highest[0] !== 'centre') {
+                packet.data = {
+                    ...packet.data,
+                    role: this.playerCards[highest[0]],
+                    centre: false,
+                    playerName: this.playerData.players[highest[0]].username,
+                    winningTeam: Cards.determineWinner(this.playerCards[highest[0]]),
+                }
+            } else {
+                packet.data = {
+                    ...packet.data,
+                    centre: true,
+                    winningTeam: Object.keys(this.playerCards).reduce((accumulator, nextVal) => accumulator ? accumulator : Cards.isWerewolf(this.playerCards[nextVal]), false) ? 'Werewolf' : 'Village',
+                }
+            }
+
+            this.sendMessageToAll(JSON.stringify(packet))
+        } else {
+            this.sendMessageToAll(JSON.stringify({ type: 'failed-vote' }));
+            setTimeout(() => {
+                this.endGame()
+            }, 10000);
+        }
     }
 
     startGame() {
-        if (this.players.length < 3 || this.players.length !== this.cardsInPlay.length - 4) {
+        if (this.playerData.playerCount < 3 || this.playerData.playerCount !== this.cardsInPlay.length - 4) {
             return this.sendMessageToHost(JSON.stringify({ type: 'failed-game-start', data: { reason: 'Not enough players' } }));
         }
 
@@ -127,8 +216,8 @@ class GameRoom {
         this.sendMessageToAll(JSON.stringify({
             type: 'game-start',
             data: {
-                players: this.players.map(
-                    player => ({ cardName: '', username: player.username, id: player.id })
+                players: Object.keys(this.playerData.players).map(
+                    clientID => ({ cardName: '', username: this.playerData.players[clientID].username, id: clientID })
                 ),
             },
         }));
@@ -140,16 +229,18 @@ class GameRoom {
             [cardList[i], cardList[j]] = [cardList[j], cardList[i]];
         }
 
-        for (let i = 0; i < this.players.length; i++) {
-            console.log(cardList[i].name);
-            this.players[i].send(JSON.stringify({ type: 'card-assign', data: { card: cardList[i].name, id: this.players[i].id } }));
-            cardList[i].player = this.players[i];
-            this.players[i].card = cardList[i];
-            this.playerCards[this.players[i].id] = cardList[i].name;
+        let count = 0;
+        for (let clientID in this.playerData.players) {
+            if(!this.playerData.players.hasOwnProperty(clientID)) continue;
+            this.playerData.players[clientID].send(JSON.stringify({ type: 'card-assign', data: { card: cardList[count].name, id: clientID } }));
+            cardList[count].player = this.playerData.players[clientID];
+            this.playerData.players[clientID].card = cardList[count];
+            this.playerCards[clientID] = cardList[count].name;
+            count++;
         }
 
         for (let i = 0; i < 4; i++) {
-            this.centreCards.push(this.cardsInPlay[i + this.players.length]);
+            this.centreCards.push(this.cardsInPlay[i + this.playerData.playerCount]);
         }
 
         const turnOrder = {};
@@ -180,23 +271,15 @@ class GameRoom {
     // Disconnect the client from the room
     disconnect(client) {
         console.log('--[ WS ROOM DISCONNECT ]-- Client', client.id, 'has disconnected from room', this.roomhash);
-        const players = [];
-
-        for (let player of this.players) {
-            if (player.id !== client.id) {
-                player.id = players.length;
-                players.push(player);
-            }
-        }
-
-        this.players = players;
+        delete this.playerData.players[client.id];
+        this.playerData.playerCount--;
         this.sendMessageToAll(JSON.stringify({ type: 'user-disconnected' }));
     }
 
     // Connect a client to the room
     // ToDo: Rooms can be password protected
     connect(client) {
-        if (this.players.length >= this.maxPlayers) {
+        if (this.playerData.playerCount >= this.maxPlayers) {
             console.log('--[ WS ROOM CONNECTION REJECTED ]-- Room', this.roomhash, 'is full!');
             return client.send(JSON.stringify({ type: 'connection-failed', data: { reason: 'Room is full' } }));
         }
@@ -207,8 +290,9 @@ class GameRoom {
         }
 
         client.id = this.idCount++;
-        client.host = this.players.length === 0;
-        this.players.push(client);
+        client.host = this.playerData.playerCount === 0;
+        this.playerData.playerCount++;
+        this.playerData.players[client.id] = client; //.push(client);
 
         // Listen for the clients to close their connection
         client.on('close', () => {
@@ -248,15 +332,17 @@ class GameRoom {
     }
 
     sendMessageToAll(message) {
-        for (let client of this.players) {
-            client.send(message);
+        for (let clientID in this.playerData.players) {
+            if(!this.playerData.players.hasOwnProperty(clientID) || clientID === 'centre') continue;
+            this.playerData.players[clientID].send(message);
         }
     }
 
     sendMessageToHost(message) {
-        for (let client of this.players) {
-            if (client.host) {
-                client.send(message);
+        for (let clientID in this.playerData.players) {
+            if(!this.playerData.players.hasOwnProperty(clientID) || clientID === 'centre') continue;
+            if (this.playerData.players[clientID].host) {
+                this.playerData.players[clientID].send(message);
                 break;
             }
         }
