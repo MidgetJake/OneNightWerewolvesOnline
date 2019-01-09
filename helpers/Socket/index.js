@@ -1,3 +1,4 @@
+const shortid = require('shortid');
 const WebSocket = require('ws');
 const GameRoom = require('./GameRoom');
 
@@ -54,19 +55,21 @@ class Index {
                 clientWS.ping(() => {});
             });
         }, 30000);
-
-        // Check if rooms are still active every 2 minutes
-        // ToDo: move the interval to the GameRoom class. This will avoid issues if this check is made as a room is created
-        setInterval(() => {
-            this.checkAliveRooms();
-        }, 120000);
     }
 
-    createRoom(hostname, roomname, data = {}) {
-        const gameRoom = new GameRoom(hostname, roomname, data);
-        this.rooms[gameRoom.roomhash] = gameRoom;
 
-        return gameRoom.roomhash;
+
+    createRoom(hostname, roomname, data = {}) {
+        const roomhash = shortid.generate();
+
+        this.rooms[roomhash] = new GameRoom(hostname, roomname, data, roomhash);
+        this.rooms[roomhash].removeSelf = (room) => {
+            console.log('--[ WS ROOM REMOVAL ]-- Kill room', room);
+            delete this.rooms[room];
+            console.log('--[ WS ROOM LIST ]--', Object.keys(this.rooms));
+        };
+
+        return roomhash;
     };
 
     checkAliveRooms() {

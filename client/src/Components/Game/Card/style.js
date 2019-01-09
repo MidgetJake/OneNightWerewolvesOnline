@@ -3,9 +3,12 @@ export default theme => ({
         width: 125,
         height: 150,
         textAlign: 'center',
-        marginTop: 15,
         display: 'flex',
         alignItems: 'stretch',
+        margin: 15,
+    },
+    killed: {
+        background: '#a55',
     },
     inactive: {
         background: '#555',

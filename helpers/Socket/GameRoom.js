@@ -1,11 +1,10 @@
-const shortid = require('shortid');
 const { CardList, CardOrder } = require('../Cards/CardList');
 const Cards = require('../Cards');
 
 // This class will handle what is needed for the game room to function
 class GameRoom {
-    constructor(roomname, hostname, data = {}) {
-        this.roomhash = shortid.generate();
+    constructor(roomname, hostname, data = {}, roomhash) {
+        this.roomhash = roomhash;
 
         console.log('--[ WS ROOM CREATION ]-- Creating new room:', this.roomhash);
 
@@ -31,7 +30,18 @@ class GameRoom {
 
         /* This should be used as an array or false (for when doppelganger is added in case of 2 sentinels) */
         this.blockedPlayer = false; // Player that the sentinel has guarded (False if none)
+
+        this.aliveInterval = setInterval(() => {
+            this.checkIfAlive();
+        }, 12000)
     }
+
+    checkIfAlive() {
+        if (this.playerData.playerCount < 1) {
+            clearInterval(this.aliveInterval);
+            this.removeSelf(this.roomhash);
+        }
+    };
 
     addCard(card) {
         this.cardsInPlay.push(card);
@@ -154,7 +164,7 @@ class GameRoom {
         setTimeout(() => {
             console.log('Ending game');
             this.endGame();
-        }, this.discussionTime * 60000)
+        }, this.discussionTime * 6000)
     }
 
     endGame() {
@@ -240,7 +250,7 @@ class GameRoom {
         }
 
         for (let i = 0; i < 4; i++) {
-            this.centreCards.push(this.cardsInPlay[i + this.playerData.playerCount]);
+            this.centreCards.push(this.cardsInPlay[i + this.playerData.playerCount].name);
         }
 
         const turnOrder = {};

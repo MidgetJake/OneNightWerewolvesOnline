@@ -26,8 +26,8 @@ class Drunk extends Card {
                     if (hasChecked) break;
                     if (message.data.centre) {
                         const tmpCard = gameRoom.playerCards[client.id];
-                        gameRoom.playerCards[client.id] = gameRoom.centreCards[message.data.id];
-                        gameRoom.centreCards[message.data.id] = tmpCard;
+                        gameRoom.playerCards[client.id] = gameRoom.centreCards[Number(message.data.id)];
+                        gameRoom.centreCards[Number(message.data.id)] = tmpCard;
                         hasChecked = true;
                         client.send(JSON.stringify({ type: 'wake-up',
                             data: {

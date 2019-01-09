@@ -6,6 +6,7 @@ import { muiDarkTheme as darkTheme, muiLightTheme as lightTheme } from 'theme';
 
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 import GameRoom from 'Pages/GameRoom';
+import Lobby from 'Pages/Lobby';
 
 const hist = createBrowserHistory();
 
@@ -34,6 +35,7 @@ class MainRouter extends React.Component {
                 <MuiThemeProvider theme={this.state.theme}>
                     <Switch>
                         <Route path={'/room/:roomcode'} component={GameRoom}/>
+                        <Route path={'/lobby'} component={Lobby}/>
                         <Redirect from={'*'} to={'/'}/>
                     </Switch>
                 </MuiThemeProvider>

@@ -21,6 +21,7 @@ class GameCard extends React.Component {
             cardType: this.props.centre ? 'centre' : 'player',
             votes: this.props.votes | 0,
             isGame: this.props.isGame | false,
+            killed: this.props.killed | false,
         };
     }
 
@@ -30,6 +31,7 @@ class GameCard extends React.Component {
                 this.props.onClick(this.state.centre, this.props.id);
             }
         } else {
+            if(this.state.centre) return;
             this.props.onClick(null, this.state.centre ? 'centre' : this.props.id);
         }
     };
@@ -40,7 +42,8 @@ class GameCard extends React.Component {
             canInteract: nextProps.canInteract,
             blocked: nextProps.blocked,
             votes: nextProps.votes,
-            isGame: nextProps.isGame
+            isGame: nextProps.isGame,
+            killed: nextProps.killed,
         };
     }
 
@@ -48,12 +51,12 @@ class GameCard extends React.Component {
         const { classes } = this.props;
 
         return (
-            <Card className={classnames(classes.root, { [classes.blocked]: this.state.blocked })}>
+            <Card className={classnames(classes.root, { [classes.blocked]: this.state.blocked, [classes.killed]: this.state.killed })}>
                 <ButtonBase focusRipple className={classes.cardButton} onClick={this.handleClick}>
                     <Typography>{this.state.cardName}{this.props.isSelf ? ' (You)' : null}</Typography>
                     <Typography>{this.state.cardText}</Typography>
-                    {this.state.isGame ? (
-                        <Typography>Votes: {this.state.votes}</Typography>
+                    {this.state.isGame ?
+                        this.state.centre ? null : (<Typography>Votes: {this.state.votes}</Typography>
                     ) : ( null )}
                 </ButtonBase>
             </Card>

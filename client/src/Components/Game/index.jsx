@@ -5,6 +5,13 @@ import style from './style';
 import Blindfold from './Blindfold';
 import GameCard from 'Components/Game/Card';
 import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import withMobileDialog from '@material-ui/core/withMobileDialog';
 
 class Game extends React.Component {
     constructor(props) {
@@ -68,7 +75,7 @@ class Game extends React.Component {
                 case 'show-card':
                     this.setState(state => {
                         if (message.data.centre) {
-                            state.centreCards[message.data.id] = message.data.cardName.name;
+                            state.centreCards[message.data.id] = message.data.cardName;
                         } else {
                             state.players[message.data.id.toString()].cardName = message.data.cardName;
                         }
@@ -111,6 +118,30 @@ class Game extends React.Component {
                 case 'vote-update':
                     this.setState({ votes: message.data.votes });
                     break;
+                case 'game-complete':
+                    console.log(message.data);
+                    for (let player in message.data.playerCards) {
+                        if (!message.data.playerCards.hasOwnProperty(player)) continue;
+                        for (let i = 0; i < players.length; i++) {
+                            if (players[i].id !== player.toString()) continue;
+                            console.log(players[i].id, message.data.killed);
+                            if (players[i].id === message.data.killed) {
+                                console.log('DED');
+                                players[i].killed = true;
+                            }
+                            players[i].cardName = message.data.playerCards[player];
+                        }
+                    }
+
+                    this.setState({
+                        killed: message.data.killed,
+                        players,
+                        centreCards: message.data.centreCards,
+                        winner: true,
+                        winningTeam: message.data.winningTeam,
+                        winnerDialog: true,
+                    });
+                    break;
             }
         };
 
@@ -129,10 +160,14 @@ class Game extends React.Component {
             canInteract: 'none',
             lastVoteID: null,
             votes: {},
+            winner: false,
+            killed: null,
+            winnerDialog: false,
         };
     }
 
     checkCard = (centreCard, id) => {
+        if (this.state.killed !== null) return;
         if (this.state.night) {
             this.socket.send(JSON.stringify({type: 'check-card', data: {centre: centreCard, id}}));
         } else {
@@ -141,13 +176,17 @@ class Game extends React.Component {
         }
     };
 
+    handleClose = () => {
+        this.setState({ winnerDialog: false });
+    };
+
     render() {
-        const { classes } = this.props;
+        const { classes, fullScreen } = this.props;
 
         return (
             <div className={classes.root}>
                 {this.state.blinded ? <Blindfold text={this.state.turnText}/> : (
-                    <div>
+                    <div className={classes.containerContainer}>
                         {this.state.night ? (
                             <div>
                                 <Typography>{this.state.turnInstructions}</Typography>
@@ -156,39 +195,72 @@ class Game extends React.Component {
                         ) : (
                             null
                         )}
-                        <div className={classes.centreCards}>
-                            {this.state.centreCards.map((cardName, index) => (
-                                <GameCard
-                                    votes={this.state.votes['centre']}
-                                    isGame={!this.state.night}
-                                    centre
-                                    canInteract={this.state.canInteract}
-                                    cardText={cardName}
-                                    id={index}
-                                    onClick={this.checkCard}
-                                />
-                            ))}
+                        <div className={classes.cardContainer}>
+                            <Typography className={classes.containerText}>Centre Cards</Typography>
+                            <div className={classes.centreCards}>
+                                {this.state.centreCards.map((cardName, index) => (
+                                    <GameCard
+                                        key={index}
+                                        votes={this.state.votes['centre']}
+                                        isGame={!this.state.night}
+                                        centre
+                                        canInteract={this.state.canInteract}
+                                        cardText={cardName}
+                                        id={index}
+                                        onClick={this.checkCard}
+                                        killed={this.state.killed === 'centre'}
+                                    />
+                                ))}
+                            </div>
+                            {this.state.night ? ( null ) : (
+                                <Button className={classes.voteButton} onClick={() => {this.checkCard(true, 'centre')}}>
+                                    <Typography>Vote Centre | {this.state.votes['centre']} Votes</Typography>
+                                </Button>
+                            )}
                         </div>
-                        <div className={classes.playerCards}>
-                            {this.state.players.map(player => (
-                                <GameCard
-                                    isSelf={this.state.ownID === player.id}
-                                    votes={this.state.votes[player.id]}
-                                    isGame={!this.state.night}
-                                    blocked={player.blocked}
-                                    canInteract={this.state.canInteract}
-                                    cardText={player.cardName}
-                                    username={player.username}
-                                    id={player.id}
-                                    onClick={this.checkCard}
-                                />
-                            ))}
+                        <div className={classes.cardContainer}>
+                            <Typography className={classes.containerText}>Player Cards</Typography>
+                            <div className={classes.playerCards}>
+                                {this.state.players.map((player, index) => (
+                                    <GameCard
+                                        key={index}
+                                        isSelf={this.state.ownID === player.id}
+                                        votes={this.state.votes[player.id]}
+                                        isGame={!this.state.night}
+                                        blocked={player.blocked}
+                                        canInteract={this.state.canInteract}
+                                        cardText={player.cardName}
+                                        username={player.username}
+                                        id={player.id}
+                                        killed={player.killed}
+                                        onClick={this.checkCard}
+                                    />
+                                ))}
+                            </div>
                         </div>
                     </div>
                 )}
+                <Dialog
+                    fullScreen={fullScreen}
+                    open={this.state.winnerDialog}
+                    onClose={this.handleClose}
+                    aria-labelledby="responsive-dialog-title"
+                >
+                    <DialogTitle id="responsive-dialog-title">Winning team</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            The {this.state.winningTeam} team is the winner!
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={this.handleClose} color="primary">
+                            Close Dialog
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </div>
         );
     }
 }
 
-export default withStyles(style)(Game);
+export default withStyles(style)(withMobileDialog()(Game));
