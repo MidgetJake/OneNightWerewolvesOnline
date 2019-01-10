@@ -1,5 +1,6 @@
 import React from 'react';
 import withStyles from '@material-ui/core/styles/withStyles';
+import withMobileDialog from '@material-ui/core/withMobileDialog';
 import style from './style';
 
 import Blindfold from './Blindfold';
@@ -11,12 +12,17 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import withMobileDialog from '@material-ui/core/withMobileDialog';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 class Game extends React.Component {
     constructor(props) {
         super(props);
         this.socket = this.props.socket;
+        this.countdownTime = setInterval(() => {
+            if (this.state.countdown < 1) return;
+            console.log(this.state.countdown);
+            this.setState({ countdown: this.state.countdown - 400 });
+        }, 400);
 
         /* !!!!! HACKY METHOD ALERT !!!!!
            We don't want a reference for this... and this is the only way I could get to work
@@ -51,6 +57,8 @@ class Game extends React.Component {
                         turnInstructions: message.data.turnInstructions,
                         canInteract: message.data.canInteract,
                         players,
+                        countdown: 7100,
+                        timer: 7100,
                     });
                     break;
                 case 'stay-asleep':
@@ -102,6 +110,14 @@ class Game extends React.Component {
                             }
                         }),
                         votes: playerVotes,
+                        timer: 59600,
+                        countdown: 59600,
+                    });
+                    break;
+                case 'failed-vote':
+                    this.setState({
+                        timer: 9600,
+                        countdown: 9600,
                     });
                     break;
                 case 'show-blocked':
@@ -163,6 +179,8 @@ class Game extends React.Component {
             winner: false,
             killed: null,
             winnerDialog: false,
+            countdown: 7000,
+            timer: 7000,
         };
     }
 
@@ -180,6 +198,10 @@ class Game extends React.Component {
         this.setState({ winnerDialog: false });
     };
 
+    componentWillUnmount() {
+        clearInterval(this.countdownTime);
+    }
+
     render() {
         const { classes, fullScreen } = this.props;
 
@@ -187,6 +209,9 @@ class Game extends React.Component {
             <div className={classes.root}>
                 {this.state.blinded ? <Blindfold text={this.state.turnText}/> : (
                     <div className={classes.containerContainer}>
+                        <div className={classes.progressContainer}>
+                            <LinearProgress className={classes.progressBar} color={'secondary'} variant='determinate' value={Math.min(((this.state.countdown - 100) / this.state.timer) * 100)} />
+                        </div>
                         {this.state.night ? (
                             <div>
                                 <Typography>{this.state.turnInstructions}</Typography>

@@ -13,7 +13,7 @@ class GameRoom {
         this.public = data.public || false; // Will the room be listed in the public lobby?
         this.name = roomname; // Name of the room
         this.turnTime = 7.5; // Time in seconds for each turn
-        this.discussionTime = 3; // Time in minutes until a vote must be made
+        this.discussionTime = 1; // Time in minutes until a vote must be made
 
         // Variables in use
         this.idCount = 0; // Total number of connections that have been made to the room, easiest way to assign an ID
@@ -164,7 +164,7 @@ class GameRoom {
         setTimeout(() => {
             console.log('Ending game');
             this.endGame();
-        }, this.discussionTime * 6000)
+        }, this.discussionTime * 60000)
     }
 
     endGame() {

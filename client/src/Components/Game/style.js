@@ -9,6 +9,14 @@ export default theme => ({
         alignItems: 'center',
         justifyContent: 'center',
     },
+    progressContainer: {
+        display: 'flex',
+        height: 20,
+        alignSelf: 'stretch',
+    },
+    progressBar: {
+        flexGrow: 1,
+    },
     cardContainer: {
         display: 'flex',
         padding: 15,

@@ -40,9 +40,9 @@ const muiDarkTheme = createMuiTheme({
             iconColour: '#fff',
         },
         secondary: {
-            light: '#bbbbbb',
-            main: '#999999',
-            dark: '#444444',
+            light: '#EF9A9A',
+            main: '#EF5350',
+            dark: '#C62828',
             contrastText: '#fff',
         },
         danger: {
