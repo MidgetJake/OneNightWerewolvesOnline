@@ -21,13 +21,13 @@ module.exports = function() {
         },
 
         createRoom: function(req, res) {
-            const roomhash = WebSocket.createRoom(req.body.hostname, req.body.roomname, req.body.data);
+            const roomhash = WebSocket.createRoom(req.body.hostname, req.body.roomname, req.body.password, req.body.data);
 
             return res.json({ success: true, roomhash });
         },
 
         roomExists: function(req, res) {
-            return res.json({ exists: WebSocket.rooms.hasOwnProperty(req.params.roomhash) });
+            return res.json({ exists: WebSocket.rooms.hasOwnProperty(req.params.roomhash), password: WebSocket.rooms[req.params.roomhash].password !== null });
         },
 
         roomPlayers: function(req, res) {

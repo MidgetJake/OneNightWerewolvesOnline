@@ -10,9 +10,6 @@ class Index {
 
         console.log('--[ INIT ]-- Index Setup');
 
-        // Just create a room initially for testing
-        this.createRoom('test', 'this is a test name');
-
         // Listener for a new connection to the WebSocket server
         this.ws.on('connection', (client, req) => {
             client.ip = req.connection.remoteAddress;
@@ -72,16 +69,6 @@ class Index {
         return roomhash;
     };
 
-    checkAliveRooms() {
-        const aliveRooms = {};
-        for (let room in this.rooms) {
-            if (!this.rooms.hasOwnProperty(room)) continue;
-            if (this.rooms[room].playerData.playerCount > 0) {
-                aliveRooms[room] = this.rooms[room];
-            }
-        }
-    };
-
     clientJoinRoom(client, data) {
         console.log('--[ WS ROOM CONNECTION ]-- Attempting to connect to room:', data.roomHash);
 
@@ -93,6 +80,18 @@ class Index {
                 data: {
                     success: false,
                     reason: 'Room does not exist',
+                },
+            }));
+            return false;
+        }
+
+        if (this.rooms[data.roomHash].password !== null && this.rooms[data.roomHash].password !== data.password) {
+            console.log('--[ WS ROOM CONNECTION FAILURE ]-- Incorrect password for room', data.roomHash);
+            client.send(JSON.stringify({
+                type: 'invalid-password',
+                data: {
+                    success: false,
+                    reason: 'Password Incorrect',
                 },
             }));
             return false;

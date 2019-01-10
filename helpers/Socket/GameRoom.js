@@ -3,13 +3,13 @@ const Cards = require('../Cards');
 
 // This class will handle what is needed for the game room to function
 class GameRoom {
-    constructor(roomname, hostname, data = {}, roomhash) {
+    constructor(roomname, hostname, password, data = {}, roomhash) {
         this.roomhash = roomhash;
 
         console.log('--[ WS ROOM CREATION ]-- Creating new room:', this.roomhash);
 
         // Currently unused
-        this.password = data.password || null; // Password for the room (null if none)
+        this.password = password || null; // Password for the room (null if none)
         this.public = data.public || false; // Will the room be listed in the public lobby?
         this.name = roomname; // Name of the room
         this.turnTime = 7.5; // Time in seconds for each turn
@@ -113,7 +113,7 @@ class GameRoom {
                 if (turn <= 25) {
                     this.makeGameTurn(turnOrder, ++turn);
                 }
-            }, 7500);
+            }, 1000 * this.turnTime);
         }, 1500);
     }
 

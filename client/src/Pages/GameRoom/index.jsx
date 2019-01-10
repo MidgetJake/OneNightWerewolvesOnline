@@ -8,6 +8,7 @@ import Card from '@material-ui/core/Card';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
+import Dialog from '@material-ui/core/Dialog';
 
 import PlayerList from 'Components/GameRoom/PlayerList';
 import SelectorCard from 'Components/GameRoom/SelectorCard';
@@ -37,6 +38,8 @@ class GameRoom extends React.Component {
             nameDialog: false,
             connected: false,
             usernames: [],
+            roomPassword: false,
+            password: '',
             isHost: false,
             game: false,
             players: [],
@@ -60,6 +63,8 @@ class GameRoom extends React.Component {
                 { card: 'Drunk', name: 'Drunk', active: false },
                 { card: 'Insomniac', name: 'Insomniac', active: false },
             ],
+            dialogShow: false,
+            dialogText: '',
         };
     }
 
@@ -77,6 +82,7 @@ class GameRoom extends React.Component {
             data: {
                 roomHash: this.props.match.params.roomcode,
                 username: this.state.playername,
+                password: this.state.password,
             },
         })));
     };
@@ -112,11 +118,10 @@ class GameRoom extends React.Component {
     componentDidMount() {
         axios.post('/room/exists/' + this.props.match.params.roomcode).then(response => {
             if (response.data.exists) {
-                this.setState({ roomExists: true, nameDialog: true, loading: false });
+                this.setState({ roomExists: true, nameDialog: true, loading: false, roomPassword: response.data.password });
                 this.connection = new WebSocket('ws://localhost', [this.props.match.params.roomcode]);
 
                 this.connection.onmessage = rawmsg => {
-                    console.log(rawmsg);
                     const message = JSON.parse(rawmsg.data);
 
                     switch (message.type) {
@@ -156,6 +161,9 @@ class GameRoom extends React.Component {
                         case 'game-start':
                             this.setState({ game: true, players: message.data.players });
                             break;
+                        case 'invalid-password':
+                            this.setState({ dialogShow: true, dialogText: 'Invalid Password' });
+                            break;
                     }
                 };
             } else {
@@ -169,11 +177,23 @@ class GameRoom extends React.Component {
         this.sendMessage(JSON.stringify({ type: 'start-game' }));
     };
 
+    handleDialogClose = () => {
+        this.setState({ dialogShow: false, loading: false, nameDialog: true });
+    };
+
     render() {
         const { classes } = this.props;
 
         return (
             <div className={classes.back}>
+                <Dialog
+                    open={this.state.dialogShow}
+                    onClose={this.handleClose}
+                    aria-labelledby="responsive-dialog-title"
+                >
+                    {this.state.dialogText}
+                    <Button onClick={this.handleDialogClose}>Dismiss</Button>
+                </Dialog>
                 {this.state.loading ? (
                     <CircularProgress/>
                 ) : this.state.nameDialog ? (
@@ -186,6 +206,17 @@ class GameRoom extends React.Component {
                             onChange={this.handleChange('playername')}
                             margin="normal"
                         />
+                        {this.state.roomPassword ? (
+                            <TextField
+                                id="standard-name"
+                                label={'Room password'}
+                                className={classes.usernameField}
+                                value={this.state.password}
+                                onChange={this.handleChange('password')}
+                                margin="normal"
+                                type={'password'}
+                            />
+                        ) : ( null )}
                         <Button onClick={this.connectToRoom} className={classes.nameButton}>Join Game</Button>
                     </Card>
                 ) : !this.state.roomExists ? (
