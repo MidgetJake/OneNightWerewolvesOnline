@@ -27,6 +27,9 @@ const muiLightTheme = createMuiTheme({
     typography: {
         useNextVariants: true,
     },
+    shape: {
+        borderRadius: 8,
+    },
 });
 
 const muiDarkTheme = createMuiTheme({
@@ -64,6 +67,9 @@ const muiDarkTheme = createMuiTheme({
     },
     typography: {
         useNextVariants: true,
+    },
+    shape: {
+        borderRadius: 8,
     },
 });
 

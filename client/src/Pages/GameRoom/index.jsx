@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 import PlayerList from 'Components/GameRoom/PlayerList';
 import SelectorCard from 'Components/GameRoom/SelectorCard';
@@ -21,7 +22,6 @@ class GameRoom extends React.Component {
 
         this.cookies = document.cookie.split(';').reduce((res, c) => {
             const data = c.trim().split('=').map(decodeURIComponent);
-            console.log(data);
             const key = data[0];
             const val = data[1];
             try {
@@ -65,6 +65,7 @@ class GameRoom extends React.Component {
             ],
             dialogShow: false,
             dialogText: '',
+            ownID: -1,
         };
     }
 
@@ -75,22 +76,25 @@ class GameRoom extends React.Component {
     };
 
     connectToRoom = () => {
-        this.setState({ loading: true, nameDialog: false });
+        this.setState({ loading: true });
         document.cookie = 'username=' + this.state.playername;
-        this.connection.send(JSON.stringify(({
+        this.connection.send(JSON.stringify({
             type: 'room-connection',
             data: {
                 roomHash: this.props.match.params.roomcode,
                 username: this.state.playername,
                 password: this.state.password,
             },
-        })));
+        }));
     };
 
-    getPlayers = () => {
+    getPlayers = ownID => {
         axios.post('/room/players/' + this.props.match.params.roomcode).then(response => {
             if (response.data.success) {
-                this.setState({ loading: false, connected: true, usernames: response.data.players });
+                console.log(ownID, response.data.players);
+                this.setState({ loading: false, connected: true, ownID: ownID.toString(), usernames: response.data.players.map(player => (
+                    { ...player, self: player.id.toString() === ownID.toString() }
+                )) });
             }
         });
     };
@@ -118,11 +122,13 @@ class GameRoom extends React.Component {
     componentDidMount() {
         axios.post('/room/exists/' + this.props.match.params.roomcode).then(response => {
             if (response.data.exists) {
+                console.log(response.data);
                 this.setState({ roomExists: true, nameDialog: true, loading: false, roomPassword: response.data.password });
                 this.connection = new WebSocket('ws://localhost', [this.props.match.params.roomcode]);
 
                 this.connection.onmessage = rawmsg => {
                     const message = JSON.parse(rawmsg.data);
+                    console.log(message);
 
                     switch (message.type) {
                         case 'room-connected':
@@ -130,14 +136,16 @@ class GameRoom extends React.Component {
                                 this.setState({ isHost: true });
                             }
 
-                            this.getPlayers();
+                            this.getPlayers(message.data.ownID);
                             this.getCards();
+                            this.setState({ loading: false, nameDialog: false, ownID: message.data.ownID });
                             break;
                         case 'user-connected':
                             this.setState({
                                 usernames: [
                                     ...this.state.usernames, {
                                         username: message.data.username,
+                                        self: this.state.ownID === message.data.id,
                                         host: false,
                                     },
                                 ],
@@ -161,8 +169,9 @@ class GameRoom extends React.Component {
                         case 'game-start':
                             this.setState({ game: true, players: message.data.players });
                             break;
-                        case 'invalid-password':
-                            this.setState({ dialogShow: true, dialogText: 'Invalid Password' });
+                        case 'connection-failed':
+                        case 'failed-game-start':
+                            this.setState({ dialogShow: true, dialogText: message.data.reason });
                             break;
                     }
                 };
@@ -178,7 +187,7 @@ class GameRoom extends React.Component {
     };
 
     handleDialogClose = () => {
-        this.setState({ dialogShow: false, loading: false, nameDialog: true });
+        this.setState({ dialogShow: false, loading: false });
     };
 
     render() {
@@ -191,7 +200,7 @@ class GameRoom extends React.Component {
                     onClose={this.handleClose}
                     aria-labelledby="responsive-dialog-title"
                 >
-                    {this.state.dialogText}
+                    <Typography>{this.state.dialogText}</Typography>
                     <Button onClick={this.handleDialogClose}>Dismiss</Button>
                 </Dialog>
                 {this.state.loading ? (
@@ -208,7 +217,7 @@ class GameRoom extends React.Component {
                         />
                         {this.state.roomPassword ? (
                             <TextField
-                                id="standard-name"
+                                id="standard-password"
                                 label={'Room password'}
                                 className={classes.usernameField}
                                 value={this.state.password}
@@ -232,11 +241,13 @@ class GameRoom extends React.Component {
                             ) : (
                                 null
                             )}
-                            <div className={classes.cardContainter}>
-                                {this.state.cards.map((card, index) => (
-                                    <SelectorCard key={index} card={card} host={this.state.isHost} sendMessage={this.sendMessage}/>
-                                ))}
-                            </div>
+                            <Scrollbars>
+                                <div className={classes.scrollArea}>
+                                    {this.state.cards.map((card, index) => (
+                                        <SelectorCard key={index} card={card} host={this.state.isHost} sendMessage={this.sendMessage}/>
+                                    ))}
+                                </div>
+                            </Scrollbars>
                         </div>
                     </Card>
                 )}

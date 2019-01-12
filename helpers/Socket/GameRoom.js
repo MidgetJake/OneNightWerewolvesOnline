@@ -1,15 +1,16 @@
 const { CardList, CardOrder } = require('../Cards/CardList');
 const Cards = require('../Cards');
+const WebSocket = require('ws');
 
 // This class will handle what is needed for the game room to function
 class GameRoom {
-    constructor(roomname, hostname, password, data = {}, roomhash) {
+    constructor(roomname, hostname, data = {}, roomhash) {
         this.roomhash = roomhash;
 
         console.log('--[ WS ROOM CREATION ]-- Creating new room:', this.roomhash);
 
         // Currently unused
-        this.password = password || null; // Password for the room (null if none)
+        this.password = data.password || null; // Password for the room (null if none)
         this.public = data.public || false; // Will the room be listed in the public lobby?
         this.name = roomname; // Name of the room
         this.turnTime = 7.5; // Time in seconds for each turn
@@ -17,7 +18,7 @@ class GameRoom {
 
         // Variables in use
         this.idCount = 0; // Total number of connections that have been made to the room, easiest way to assign an ID
-        this.maxPlayers = data.maxPlayers || 16; // Max number of players that can be in the room
+        this.maxPlayers = data.maxPlayers || 14; // Max number of players that can be in the room
         this.cardsInPlay = []; // All cards that are in game (centre & player)
         this.inProgress = false; // Has the game started?
         this.centreCards = []; // The 4 centre cards
@@ -33,7 +34,7 @@ class GameRoom {
 
         this.aliveInterval = setInterval(() => {
             this.checkIfAlive();
-        }, 12000)
+        }, 120000)
     }
 
     checkIfAlive() {
@@ -218,8 +219,13 @@ class GameRoom {
     }
 
     startGame() {
-        if (this.playerData.playerCount < 3 || this.playerData.playerCount !== this.cardsInPlay.length - 4) {
+        if (this.playerData.playerCount < 3) {
+            console.log('Needs more players');
             return this.sendMessageToHost(JSON.stringify({ type: 'failed-game-start', data: { reason: 'Not enough players' } }));
+        }
+
+        if(this.playerData.playerCount !== this.cardsInPlay.length - 4) {
+            return this.sendMessageToHost(JSON.stringify({ type: 'failed-game-start', data: { reason: 'Needs to be exactly 4 more cards than players' } }));
         }
 
         this.inProgress = true;
@@ -286,8 +292,6 @@ class GameRoom {
         this.sendMessageToAll(JSON.stringify({ type: 'user-disconnected' }));
     }
 
-    // Connect a client to the room
-    // ToDo: Rooms can be password protected
     connect(client) {
         if (this.playerData.playerCount >= this.maxPlayers) {
             console.log('--[ WS ROOM CONNECTION REJECTED ]-- Room', this.roomhash, 'is full!');
@@ -337,21 +341,23 @@ class GameRoom {
         });
 
         console.log('--[ WS ROOM CONNECTION ]-- Client', client.id, 'Successfully joined the room', this.roomhash);
-        client.send(JSON.stringify({ type: 'room-connected', data: { host: client.host } }));
-        this.sendMessageToAll(JSON.stringify({ type: 'user-connected', data: { username: client.username } }));
+        client.send(JSON.stringify({ type: 'room-connected', data: { host: client.host, ownID: client.id } }));
+        this.sendMessageToAll(JSON.stringify({ type: 'user-connected', data: { username: client.username, id: client.id } }));
     }
 
     sendMessageToAll(message) {
         for (let clientID in this.playerData.players) {
-            if(!this.playerData.players.hasOwnProperty(clientID) || clientID === 'centre') continue;
-            this.playerData.players[clientID].send(message);
+            if (!this.playerData.players.hasOwnProperty(clientID) || clientID === 'centre') continue;
+            if (this.playerData.players[clientID].readyState === WebSocket.OPEN) {
+                this.playerData.players[clientID].send(message);
+            }
         }
     }
 
     sendMessageToHost(message) {
         for (let clientID in this.playerData.players) {
             if(!this.playerData.players.hasOwnProperty(clientID) || clientID === 'centre') continue;
-            if (this.playerData.players[clientID].host) {
+            if (this.playerData.players[clientID].host && this.playerData.players[clientID].readyState === WebSocket.OPEN) {
                 this.playerData.players[clientID].send(message);
                 break;
             }

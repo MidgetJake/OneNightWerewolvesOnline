@@ -88,7 +88,7 @@ class Index {
         if (this.rooms[data.roomHash].password !== null && this.rooms[data.roomHash].password !== data.password) {
             console.log('--[ WS ROOM CONNECTION FAILURE ]-- Incorrect password for room', data.roomHash);
             client.send(JSON.stringify({
-                type: 'invalid-password',
+                type: 'connection-failed',
                 data: {
                     success: false,
                     reason: 'Password Incorrect',

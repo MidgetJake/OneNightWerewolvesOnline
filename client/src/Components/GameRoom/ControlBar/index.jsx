@@ -15,7 +15,7 @@ class ControlBar extends React.Component {
 
         return (
             <Card className={classes.root}>
-                <Button onClick={this.props.onStart}>Start Game</Button>
+                <Button variant='outlined' onClick={this.props.onStart}>Start Game</Button>
             </Card>
         );
     }

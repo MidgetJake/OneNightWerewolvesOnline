@@ -26,7 +26,7 @@ class PlayerList extends React.Component {
                         <div key={index}>
                             <Divider light />
                             <ListItem button>
-                                <ListItemText primary={player.username} secondary={player.host ? 'host' : ''} />
+                                <ListItemText primary={(player.self ? '(You) ' : '') + player.username} secondary={player.host ? 'host' : ''} />
                             </ListItem>
                         </div>
                     ))}

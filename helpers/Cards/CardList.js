@@ -30,6 +30,13 @@ const CardList = {
     Insomniac
 };
 
+const CardData = cardname => {
+    const name = decodeURI(cardname);
+    const data = new CardList[name];
+
+    return { action: data.actionDesc, name: data.name, team: data.team };
+};
+
 const CardOrder = {
     '0': new Sentinel(),
     '2': new Werewolf(),
@@ -44,4 +51,4 @@ const CardOrder = {
     '15': new Insomniac(),
 };
 
-module.exports = { CardList, CardOrder };
+module.exports = { CardList, CardOrder, CardData };

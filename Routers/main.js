@@ -1,15 +1,22 @@
 'use strict';
 let WebSocket = null;
+const { CardData } = require('../helpers/Cards/CardList');
 
 module.exports = function() {
     return {
         setRouting: function(router) {
+            router.get('/card/:cardname', this.getCardInfo);
+            // router.get('/static/media/:file', this.getStatic);
             router.get('*', this.indexPage);
 
             router.post('/room/create', this.createRoom);
             router.post('/room/exists/:roomhash', this.roomExists);
             router.post('/room/players/:roomhash', this.roomPlayers);
             router.post('/room/getcards/:roomhash', this.getRoomCards);
+        },
+
+        getStatic: function(req, res) {
+
         },
 
         setSocket: function(socket) {
@@ -21,7 +28,7 @@ module.exports = function() {
         },
 
         createRoom: function(req, res) {
-            const roomhash = WebSocket.createRoom(req.body.hostname, req.body.roomname, req.body.password, req.body.data);
+            const roomhash = WebSocket.createRoom(req.body.hostname, req.body.roomname, { ...req.body.data, password: req.body.password });
 
             return res.json({ success: true, roomhash });
         },
@@ -35,12 +42,16 @@ module.exports = function() {
                 const playerList = WebSocket.rooms[req.params.roomhash].playerData.players;
                 return res.json({
                     success: true, players: Object.keys(playerList).map(clientID => (
-                        { username: playerList[clientID].username, host: playerList[clientID].host })
+                        { id: clientID, username: playerList[clientID].username, host: playerList[clientID].host })
                     ),
                 });
             } else {
                 return res.json({ success: false, errorMsg: 'Room does not exist' });
             }
+        },
+
+        getCardInfo: function(req, res) {
+            return res.json({ success: true, cardInfo: CardData(req.params.cardname) });
         },
 
         getRoomCards: function(req, res) {
