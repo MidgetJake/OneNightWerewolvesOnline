@@ -7,6 +7,9 @@ import axios from 'axios';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Card from '@material-ui/core/Card';
+import Checkbox from '@material-ui/core/Checkbox';
+import Typography from '@material-ui/core/Typography';
+import RoomItem from 'Components/RoomItem';
 
 class Game extends React.Component {
     constructor(props) {
@@ -14,14 +17,33 @@ class Game extends React.Component {
 
         this.state = {
             roomname: '',
-            password: '',
+            roomPassword: '',
+            privateChecked: false,
+            roomList: [],
         };
+
+        this.getRooms();
     }
+
+    getRooms = () => {
+        axios.get('/room/getall').then(response => {
+            this.setState({ roomList: response.data.roomList });
+        })
+    };
+
+    handleCheckedChange = name => event => {
+        this.setState({
+            [name]: event.target.checked,
+        });
+    };
 
     createRoom = () => {
         axios.post('/room/create', {
             roomname: this.state.roomname,
-            password: this.state.password,
+            password: this.state.roomPassword,
+            data: {
+                public: !this.state.privateChecked,
+            },
         }).then(response => {
             this.props.history.push('/room/' + response.data.roomhash);
         })
@@ -38,22 +60,44 @@ class Game extends React.Component {
 
         return (
             <div className={classes.root}>
-                <Card>
+                <Card className={classes.createLobby}>
+                    <Card className={classes.createTitle}>
+                        <Typography>Create a room</Typography>
+                    </Card>
                     <TextField
+                        className={classes.textBox}
+                        name={'room-name'}
                         label='Room Name'
                         value={this.state.roomname}
                         onChange={this.handleChange('roomname')}
                         margin='normal'
+                        variant="outlined"
+                        autoComplete={'room-name'}
                     />
                     <TextField
+                        className={classes.textBox}
+                        name={'room-pass'}
                         label='Room Password'
-                        value={this.state.password}
-                        onChange={this.handleChange('password')}
+                        value={this.state.roomPassword}
+                        onChange={this.handleChange('roomPassword')}
                         margin='normal'
                         type={'password'}
+                        variant="outlined"
+                        autoComplete={'room-password'}
                     />
+                    <div className={classes.selectSection}>
+                        <Checkbox
+                            checked={this.state.privateChecked}
+                            onChange={this.handleCheckedChange('privateChecked')}
+                        />
+                        <Typography>Private Lobby</Typography>
+                    </div>
                     <Button variant='contained' color='primary' onClick={this.createRoom}>Create Room</Button>
                 </Card>
+                <div className={classes.lobbyList}>
+                    <Card className={classes.lobbyBar}><Button onClick={this.getRooms}>Refresh List</Button></Card>
+                    {this.state.roomList.map(room => <RoomItem room={room} />)}
+                </div>
             </div>
         );
     }

@@ -6,6 +6,7 @@ module.exports = function() {
     return {
         setRouting: function(router) {
             router.get('/card/:cardname', this.getCardInfo);
+            router.get('/room/getall', this.getRooms);
             // router.get('/static/media/:file', this.getStatic);
             router.get('*', this.indexPage);
 
@@ -25,6 +26,24 @@ module.exports = function() {
 
         indexPage: function(req, res) {
             return res.render('index/index.ejs', { title: 'One Night!' });
+        },
+
+        getRooms: function(req, res) {
+            const roomList = [];
+
+            for(let room in WebSocket.rooms) {
+                if(!WebSocket.rooms.hasOwnProperty(room)) continue;
+                if(WebSocket.rooms[room].public && !WebSocket.rooms[room].inProgress) {
+                    roomList.push({
+                        name: WebSocket.rooms[room].name,
+                        roomhash: WebSocket.rooms[room].roomhash,
+                        playerCount: WebSocket.rooms[room].playerData.playerCount,
+                        maxPlayers: WebSocket.rooms[room].maxPlayers,
+                    });
+                }
+            }
+
+            res.json({ roomList });
         },
 
         createRoom: function(req, res) {

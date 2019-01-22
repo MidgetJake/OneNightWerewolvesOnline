@@ -123,7 +123,7 @@ class GameRoom extends React.Component {
         axios.post('/room/exists/' + this.props.match.params.roomcode).then(response => {
             if (response.data.exists) {
                 console.log(response.data);
-                this.setState({ roomExists: true, nameDialog: true, loading: false, roomPassword: response.data.password });
+                this.setState({ roomExists: true, nameDialog: true, loading: false, roomPassword: response.data.password !== null });
                 this.connection = new WebSocket('ws://localhost', [this.props.match.params.roomcode]);
 
                 this.connection.onmessage = rawmsg => {
@@ -233,14 +233,16 @@ class GameRoom extends React.Component {
                 ) : this.state.game ? (
                     <Game players={this.state.players} socket={this.connection}/>
                 ) : (
-                    <Card className={classes.gameBack}>
-                        <PlayerList players={this.state.usernames}/>
-                        <div className={classes.controlSector}>
+                    <div className={classes.gameBack}>
+                        <div className={classes.leftBar}>
                             {this.state.isHost ? (
-                                <ControlBar onStart={this.startGame}/>
+                                <ControlBar isHost={this.state.isHost} password={this.state.password} socket={this.connection} onStart={this.startGame}/>
                             ) : (
                                 null
                             )}
+                            <PlayerList players={this.state.usernames}/>
+                        </div>
+                        <div className={classes.controlSector}>
                             <Scrollbars>
                                 <div className={classes.scrollArea}>
                                     {this.state.cards.map((card, index) => (
@@ -249,7 +251,7 @@ class GameRoom extends React.Component {
                                 </div>
                             </Scrollbars>
                         </div>
-                    </Card>
+                    </div>
                 )}
             </div>
         );

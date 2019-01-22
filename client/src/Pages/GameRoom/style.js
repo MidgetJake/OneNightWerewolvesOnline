@@ -8,7 +8,7 @@ export default theme => ({
         flexGrow: 1,
     },
     gameBack: {
-        background: '#666',
+        // background: '#666',
         width: '100vw',
         display: 'flex',
         flexGrow: 1,
@@ -18,9 +18,19 @@ export default theme => ({
         overflowY: 'auto',
         overflowX: 'hidden',
         [theme.breakpoints.up('lg')]: {
+            overflow: 'hidden',
             width: '75vw',
             flexGrow: 'unset',
         },
+        [theme.breakpoints.up('xl')]: {
+            height: '75vh',
+        }
+    },
+    leftBar: {
+        paddingLeft: theme.spacing.unit * 2,
+        display: 'flex',
+        flexDirection: 'column',
+        width: 300,
     },
     controlSector: {
         display: 'flex',
@@ -39,16 +49,16 @@ export default theme => ({
         alignItems: 'flex-start',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
-        paddingLeft: 15,
-        paddingRight: 15,
+        paddingLeft: theme.spacing.unit * 2,
+        paddingRight: theme.spacing.unit * 2,
     },
     scrollArea: {
         display: 'flex',
         flexWrap: 'wrap',
         alignItems: 'flex-start',
         justifyContent: 'space-between',
-        paddingLeft: 9,
-        paddingRight: 9,
+        paddingLeft: theme.spacing.unit,
+        paddingRight: theme.spacing.unit,
     },
     nameCard: {
         width: 200,

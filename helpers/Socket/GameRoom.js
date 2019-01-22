@@ -4,7 +4,7 @@ const WebSocket = require('ws');
 
 // This class will handle what is needed for the game room to function
 class GameRoom {
-    constructor(roomname, hostname, data = {}, roomhash) {
+    constructor(hostname, roomname, data = {}, roomhash) {
         this.roomhash = roomhash;
 
         console.log('--[ WS ROOM CREATION ]-- Creating new room:', this.roomhash);
@@ -14,7 +14,8 @@ class GameRoom {
         this.public = data.public || false; // Will the room be listed in the public lobby?
         this.name = roomname; // Name of the room
         this.turnTime = 7.5; // Time in seconds for each turn
-        this.discussionTime = 1; // Time in minutes until a vote must be made
+        this.discussionTime = 3; // Time in minutes until a vote must be made
+        this.tiedCooldown = 10; // Time in seconds to check votes if there is a tie
 
         // Variables in use
         this.idCount = 0; // Total number of connections that have been made to the room, easiest way to assign an ID
@@ -214,7 +215,7 @@ class GameRoom {
             this.sendMessageToAll(JSON.stringify({ type: 'failed-vote' }));
             setTimeout(() => {
                 this.endGame()
-            }, 10000);
+            }, 1000 * this.tiedCooldown);
         }
     }
 
@@ -329,6 +330,14 @@ class GameRoom {
                     break;
                 case 'get-cards':
                     client.send(JSON.stringify({ type: 'get-cards', data: { cards: this.cardsInPlay.map(card => (card.clientName)) } }));
+                    break;
+                case 'set-changes':
+                    if (!client.host) break;
+                    this.password = message.data.password;
+                    this.turnTime = message.data.turnTime;
+                    this.discussionTime = message.data.discussionTime;
+                    this.tiedCooldown = message.data.tiedCooldown;
+                    this.maxPlayers = message.data.maxPlayers;
                     break;
                 case 'start-game':
                     if (!client.host) break;
