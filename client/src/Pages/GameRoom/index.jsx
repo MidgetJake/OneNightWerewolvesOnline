@@ -235,15 +235,20 @@ class GameRoom extends React.Component {
                 ) : (
                     <div className={classes.gameBack}>
                         <div className={classes.leftBar}>
-                            {this.state.isHost ? (
-                                <ControlBar isHost={this.state.isHost} password={this.state.password} socket={this.connection} onStart={this.startGame}/>
-                            ) : (
-                                null
-                            )}
-                            <PlayerList players={this.state.usernames}/>
+                            <ControlBar code={this.props.match.params.roomcode} isHost={this.state.isHost} password={this.state.password} socket={this.connection} onStart={this.startGame}/>
                         </div>
                         <div className={classes.controlSector}>
-                            <Scrollbars>
+                            <Scrollbars
+                                renderView={props => <div {...props} style={{
+                                    marginBottom: 'unset',
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    overflow: 'auto',
+                                }} />}
+                            >
                                 <div className={classes.scrollArea}>
                                     {this.state.cards.map((card, index) => (
                                         <SelectorCard key={index} card={card} host={this.state.isHost} sendMessage={this.sendMessage}/>
@@ -251,6 +256,7 @@ class GameRoom extends React.Component {
                                 </div>
                             </Scrollbars>
                         </div>
+                        <PlayerList players={this.state.usernames}/>
                     </div>
                 )}
             </div>

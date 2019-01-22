@@ -18,6 +18,26 @@ export default theme => ({
         borderRadius: 8,
         marginTop: theme.spacing.unit,
     },
+    codeBox: {
+        display: 'flex',
+    },
+    copyButton: {
+        marginTop: theme.spacing.unit,
+        marginBottom: theme.spacing.unit,
+        borderBottomLeftRadius: 0,
+        borderTopLeftRadius: 0,
+    },
+    codeTextBox: {
+        borderTopRightRadius: 0,
+        borderBottomRightRadius: 0,
+        paddingLeft: theme.spacing.unit,
+    },
+    hostSect: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'stretch',
+        justifyContent: 'center',
+    },
     textBox: {
         marginTop: theme.spacing.unit,
     },

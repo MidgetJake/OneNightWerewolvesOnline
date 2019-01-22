@@ -5,6 +5,7 @@ export default theme => ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        background: theme.palette.pageBackground,
     },
     createLobby: {
         display: 'flex',
@@ -20,11 +21,14 @@ export default theme => ({
         marginBottom: 0,
     },
     createTitle: {
-        background: '#555',
+        background: theme.palette.titleback,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         padding: theme.spacing.unit,
+    },
+    createButton: {
+        marginTop: theme.spacing.unit,
     },
     lobbyList: {
         width: 400,
@@ -36,5 +40,6 @@ export default theme => ({
     lobbyBar: {
         display: 'flex',
         padding: theme.spacing.unit,
+        background: theme.spacing.titl
     },
 });

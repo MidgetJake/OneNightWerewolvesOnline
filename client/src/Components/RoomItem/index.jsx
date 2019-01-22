@@ -12,8 +12,8 @@ class RoomItem extends React.Component {
     }
 
     connectToRoom = () => {
-
-    }
+        this.props.history.push('/room/' + this.props.roomhash);
+    };
 
     render() {
         const { classes, room } = this.props;

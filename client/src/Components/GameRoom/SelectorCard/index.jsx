@@ -1,5 +1,6 @@
 import React from 'react';
 import withStyles from '@material-ui/core/styles/withStyles';
+import withTheme from '@material-ui/core/styles/withTheme';
 import withMobileDialog from '@material-ui/core/withMobileDialog';
 import style from './style';
 import classnames from 'classnames';
@@ -61,7 +62,7 @@ class SelectorCard extends React.Component {
     };
 
     render() {
-        const { classes, fullScreen } = this.props;
+        const { classes, fullScreen, theme } = this.props;
 
         return (
             <Card className={classes.root}>
@@ -83,7 +84,8 @@ class SelectorCard extends React.Component {
                               size={1}
                               horizontal
                               vertical
-                              color="white"/>
+                              color={theme.palette.iconColour}
+                        />
                     </IconButton>
                 </div>
 
@@ -118,4 +120,4 @@ class SelectorCard extends React.Component {
     }
 }
 
-export default withStyles(style)(withMobileDialog()(SelectorCard));
+export default withStyles(style)(withMobileDialog()(withTheme()(SelectorCard)));

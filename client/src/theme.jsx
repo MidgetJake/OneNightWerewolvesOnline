@@ -23,6 +23,10 @@ const muiLightTheme = createMuiTheme({
             dark: '#7289DA',
             contrastText: '#fff',
         },
+        titleback: '#ddd',
+        cardColour: '#fff',
+        iconColour: 'black',
+        pageBackground: '#eee',
     },
     typography: {
         useNextVariants: true,
@@ -64,6 +68,10 @@ const muiDarkTheme = createMuiTheme({
             dark: '#7289DA',
             contrastText: '#fff',
         },
+        titleback: '#555',
+        cardColour: '#444',
+        iconColour: 'white',
+        pageBackground: '#313131',
     },
     typography: {
         useNextVariants: true,

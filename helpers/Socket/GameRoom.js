@@ -12,7 +12,7 @@ class GameRoom {
         // Currently unused
         this.password = data.password || null; // Password for the room (null if none)
         this.public = data.public || false; // Will the room be listed in the public lobby?
-        this.name = roomname; // Name of the room
+        this.name = roomname !== '' ? roomname : roomhash; // Name of the room
         this.turnTime = 7.5; // Time in seconds for each turn
         this.discussionTime = 3; // Time in minutes until a vote must be made
         this.tiedCooldown = 10; // Time in seconds to check votes if there is a tie

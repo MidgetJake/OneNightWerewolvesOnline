@@ -1,36 +1,38 @@
 export default theme => ({
     back: {
-        background: '#888',
-        width: '100vw',
+        background: theme.palette.pageBackground,
+        width: 'calc(100vw - ' + theme.spacing.unit * 4 + 'px)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         flexGrow: 1,
+        padding: theme.spacing.unit * 2,
     },
     gameBack: {
         // background: '#666',
-        width: '100vw',
+        width: 'calc(100vw - ' + theme.spacing.unit * 4 + 'px)',
         display: 'flex',
         flexGrow: 1,
+        alignItems: 'stretch',
         height: '100%',
-        alignItems: 'flex-start',
-        maxHeight: '100vh',
+        alignSelf: 'stretch',
+        maxHeight: 'calc(100vh - ' + theme.spacing.unit * 4 + 'px)',
         overflowY: 'auto',
         overflowX: 'hidden',
-        [theme.breakpoints.up('lg')]: {
+        /*[theme.breakpoints.up('lg')]: {
             overflow: 'hidden',
             width: '75vw',
             flexGrow: 'unset',
         },
         [theme.breakpoints.up('xl')]: {
             height: '75vh',
-        }
+        }*/
     },
     leftBar: {
-        paddingLeft: theme.spacing.unit * 2,
+        marginRight: theme.spacing.unit,
         display: 'flex',
         flexDirection: 'column',
-        width: 300,
+        width: 400,
     },
     controlSector: {
         display: 'flex',
@@ -38,11 +40,10 @@ export default theme => ({
         alignItems: 'stretch',
         justifyContent: 'flex-start',
         flexGrow: 1,
-        height: '100vh',
         width: 'calc(100vw - 201px)',
-        [theme.breakpoints.up('lg')]: {
+        /*[theme.breakpoints.up('lg')]: {
             width: 'calc(75vw - 201px)',
-        },
+        },*/
     },
     cardContainer: {
         display: 'flex',

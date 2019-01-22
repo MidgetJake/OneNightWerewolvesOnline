@@ -53,7 +53,8 @@ module.exports = function() {
         },
 
         roomExists: function(req, res) {
-            return res.json({ exists: WebSocket.rooms.hasOwnProperty(req.params.roomhash), password: WebSocket.rooms[req.params.roomhash].password !== null });
+            const exists = WebSocket.rooms.hasOwnProperty(req.params.roomhash);
+            return res.json({ exists, password: exists ? WebSocket.rooms[req.params.roomhash].password !== null : false });
         },
 
         roomPlayers: function(req, res) {
