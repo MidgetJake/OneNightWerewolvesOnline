@@ -2,6 +2,7 @@ import React from 'react';
 import withStyles from '@material-ui/core/styles/withStyles';
 import NumberFormat from 'react-number-format';
 import style from './style';
+import constants from 'Models/Constants';
 
 import Card from '@material-ui/core/Card';
 import Button from '@material-ui/core/Button';
@@ -71,7 +72,7 @@ class ControlBar extends React.Component {
                         <TextField
                             className={classes.textBox}
                             label={'Room code'}
-                            value={'http://werewolves.jakebarter.co.uk/room/' + this.props.code}
+                            value={constants.url + '/room/' + this.props.code}
                             margin={'normal'}
                             InputProps={{
                                 readOnly: true,

@@ -2,6 +2,7 @@ import React from 'react';
 import withStyles from '@material-ui/core/styles/withStyles';
 import style from './style';
 import axios from 'axios';
+import constants from 'Models/Constants';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Card from '@material-ui/core/Card';
@@ -124,7 +125,7 @@ class GameRoom extends React.Component {
             if (response.data.exists) {
                 console.log(response.data);
                 this.setState({ roomExists: true, nameDialog: true, loading: false, roomPassword: response.data.password !== null });
-                this.connection = new WebSocket('wss://werewolves.jakebarter.co.uk', [this.props.match.params.roomcode]);
+                this.connection = new WebSocket(constants.wsURL, [this.props.match.params.roomcode]);
 
                 this.connection.onmessage = rawmsg => {
                     const message = JSON.parse(rawmsg.data);
