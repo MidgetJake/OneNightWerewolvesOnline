@@ -71,7 +71,7 @@ class ControlBar extends React.Component {
                         <TextField
                             className={classes.textBox}
                             label={'Room code'}
-                            value={'http://localhost/room/' + this.props.code}
+                            value={'http://werewolves.jakebarter.co.uk/room/' + this.props.code}
                             margin={'normal'}
                             InputProps={{
                                 readOnly: true,
