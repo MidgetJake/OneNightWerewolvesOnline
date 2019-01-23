@@ -124,7 +124,7 @@ class GameRoom extends React.Component {
             if (response.data.exists) {
                 console.log(response.data);
                 this.setState({ roomExists: true, nameDialog: true, loading: false, roomPassword: response.data.password !== null });
-                this.connection = new WebSocket('ws://werewolves.jakebarter.co.uk', [this.props.match.params.roomcode]);
+                this.connection = new WebSocket('wss://werewolves.jakebarter.co.uk', [this.props.match.params.roomcode]);
 
                 this.connection.onmessage = rawmsg => {
                     const message = JSON.parse(rawmsg.data);
