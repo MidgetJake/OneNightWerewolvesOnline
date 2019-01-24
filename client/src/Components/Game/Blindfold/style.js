@@ -11,4 +11,7 @@ export default theme => ({
         textAlign: 'center',
         display: 'flex',
     },
+    text: {
+        color: '#fff',
+    },
 });

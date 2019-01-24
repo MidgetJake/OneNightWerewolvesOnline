@@ -21,8 +21,8 @@ class Game extends React.Component {
         this.countdownTime = setInterval(() => {
             if (this.state.countdown < 1) return;
             console.log(this.state.countdown);
-            this.setState({ countdown: this.state.countdown - 400 });
-        }, 400);
+            this.setState({ countdown: this.state.countdown - 1000 });
+        }, 1000);
 
         /* !!!!! HACKY METHOD ALERT !!!!!
            We don't want a reference for this... and this is the only way I could get to work
@@ -57,8 +57,8 @@ class Game extends React.Component {
                         turnInstructions: message.data.turnInstructions,
                         canInteract: message.data.canInteract,
                         players,
-                        countdown: 7100,
-                        timer: 7100,
+                        countdown: (message.data.turnTime * 1000),
+                        timer: (message.data.turnTime * 1000),
                     });
                     break;
                 case 'stay-asleep':
@@ -110,14 +110,14 @@ class Game extends React.Component {
                             }
                         }),
                         votes: playerVotes,
-                        timer: 59600,
-                        countdown: 59600,
+                        timer: (message.data.discussionTime),
+                        countdown: (message.data.discussionTime),
                     });
                     break;
                 case 'failed-vote':
                     this.setState({
-                        timer: 9600,
-                        countdown: 9600,
+                        timer: (message.data.tiedCooldown * 1000),
+                        countdown: (message.data.tiedCooldown * 1000),
                     });
                     break;
                 case 'show-blocked':

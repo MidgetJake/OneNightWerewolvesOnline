@@ -27,6 +27,7 @@ const muiLightTheme = createMuiTheme({
         cardColour: '#fff',
         iconColour: 'black',
         pageBackground: '#eee',
+        borderColour: 'rgba(0, 0, 0, 0.23)'
     },
     typography: {
         useNextVariants: true,
@@ -72,6 +73,7 @@ const muiDarkTheme = createMuiTheme({
         cardColour: '#444',
         iconColour: 'white',
         pageBackground: '#313131',
+        borderColour: 'rgba(255, 255, 255, 0.4)'
     },
     typography: {
         useNextVariants: true,

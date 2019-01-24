@@ -1,7 +1,7 @@
 export default theme => ({
     root: {
-        width: '100vw',
-        height: '100vh',
+        width: '100%',
+        height: '100%',
     },
     containerContainer: {
         display: 'flex',
@@ -13,6 +13,11 @@ export default theme => ({
         display: 'flex',
         height: 20,
         alignSelf: 'stretch',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        width: '100vw',
     },
     progressBar: {
         flexGrow: 1,
@@ -20,7 +25,7 @@ export default theme => ({
     cardContainer: {
         display: 'flex',
         padding: 15,
-        border: '1px rgba(255, 255, 255, 0.4) solid',
+        border: '1px ' + theme.palette.borderColour + ' solid',
         borderRadius: 15,
         margin: 15,
         width: 'calc(100vw - 62px)',
@@ -33,12 +38,13 @@ export default theme => ({
         padding: 5,
         paddingRight: 25,
         paddingLeft: 25,
-        background: '#444',
+        background: theme.palette.cardColour,
+        boxShadow: '0px 1px 3px 0px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)',
         alignSelf: 'center',
     },
     containerText: {
         position: 'absolute',
-        background: '#888',
+        background: theme.palette.pageBackground,
         top: 0,
         left: 45,
         transform: 'translate(0, -50%)',

@@ -86,7 +86,7 @@ class GameRoom {
             }
 
             if (turn > 25) {
-                this.sendMessageToAll(JSON.stringify({ type: 'end-night', data: { blockedPlayer: this.blockedPlayer, } }));
+                this.sendMessageToAll(JSON.stringify({ type: 'end-night', data: { blockedPlayer: this.blockedPlayer, discussionTime: this.discussionTime * 60000 } }));
                 this.votePhase();
                 return;
             }
@@ -212,7 +212,7 @@ class GameRoom {
 
             this.sendMessageToAll(JSON.stringify(packet))
         } else {
-            this.sendMessageToAll(JSON.stringify({ type: 'failed-vote' }));
+            this.sendMessageToAll(JSON.stringify({ type: 'failed-vote', data: { tiedCooldown: this.tiedCooldown } }));
             setTimeout(() => {
                 this.endGame()
             }, 1000 * this.tiedCooldown);

@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const validator = require('express-validator');
 const session = require('express-session');
+const compression = require('compression');
 const dependencies = require('./dependencies');
 const Socket = require('./helpers/Socket');
 const path = require('path');
@@ -36,7 +37,8 @@ dependencies.resolve(function(main) {
     function configureExpress(app) {
         // require('./passport/passport-local');
 
-        app.use(express.static('client/public'));
+        app.use(compression());
+        app.use('/', express.static('client/public'));
         app.use(cookieParser());
         app.set('views', path.join(__dirname, '/client/public'));
         app.set('view engine', 'ejs');

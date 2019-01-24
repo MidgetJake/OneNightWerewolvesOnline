@@ -22,6 +22,7 @@ class Card {
                 turnInstructions: this.turnInstructions,
                 canInteract: this.canInteract,
                 blockedPlayer: gameRoom.blockedPlayer,
+                turnTime: gameRoom.turnTime,
             },
         }));
     }

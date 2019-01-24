@@ -14,7 +14,7 @@ class Blindfold extends React.Component {
 
         return (
             <div className={classes.root}>
-                <Typography>{this.props.text}</Typography>
+                <Typography className={classes.text}>{this.props.text}</Typography>
             </div>
         );
     }
