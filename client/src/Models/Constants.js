@@ -4,6 +4,8 @@ export default {
         Village: 'village',
         Tanner: 'tanner',
     },
-    url: process.env.SYSENV === 'PROD' ? 'https://werewolves.jakebarter.co.uk' : 'http://localhost',
-    wsURL: process.env.SYSENV === 'PROD' ? 'wss://werewolves.jakebarter.co.uk' : 'ws://localhost',
+    url: 'https://werewolves.jakebarter.co.uk',
+    // url: 'http://localhost',
+    wsURL: 'wss://werewolves.jakebarter.co.uk',
+    // wsURL: 'ws://localhost',
 };
