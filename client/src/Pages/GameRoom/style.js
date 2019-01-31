@@ -14,7 +14,7 @@ export default theme => ({
         display: 'flex',
         flexGrow: 1,
         alignItems: 'stretch',
-        height: '100%',
+        // height: '100%',
         alignSelf: 'stretch',
         maxHeight: 'calc(100vh - ' + theme.spacing.unit * 4 + 'px)',
         overflowY: 'auto',

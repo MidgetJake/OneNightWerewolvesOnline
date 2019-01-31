@@ -1,15 +1,15 @@
 const Card = require('./index');
 
-class Sentinel extends Card {
+class Priest extends Card {
     constructor(clientName) {
         super({
             team: 'Village',
-            name: 'Sentinel',
+            name: 'Priest',
             clientName,
             turn: '0',
-            actionDesc: 'Wake up and put a token on a player. That players card cannot be touched',
+            actionDesc: 'You wake up and select a player to guard. This players role cannot be changed or viewed',
             turnInstructions: 'Select a player to guard',
-            globalInstructions: 'Sentinel, wake up and place your token upon a player',
+            globalInstructions: 'Priest, select a player to guard',
             canInteract: 'player',
         });
     }
@@ -36,4 +36,4 @@ class Sentinel extends Card {
     }
 }
 
-module.exports = Sentinel;
+module.exports = Priest;

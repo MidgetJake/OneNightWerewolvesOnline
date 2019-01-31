@@ -1,14 +1,14 @@
 const Card = require('./index');
 
-class ApprenticeSeer extends Card {
+class YoungOracle extends Card {
     constructor(clientName) {
         super({
-            name: 'Apprentice Seer',
+            name: 'Young Oracle',
             clientName,
             turn: 8,
             actionDesc: 'You wake up and look at 1 centre card',
             turnInstructions: 'Look at 1 centre card',
-            globalInstructions: 'Apprentice Seer, wake up and look at 1 centre card',
+            globalInstructions: 'Young Oracle, wake up and look at 1 centre card',
             canInteract: 'centre',
         });
 
@@ -45,4 +45,4 @@ class ApprenticeSeer extends Card {
     }
 }
 
-module.exports = ApprenticeSeer;
+module.exports = YoungOracle;

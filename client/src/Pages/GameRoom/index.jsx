@@ -10,6 +10,10 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import { Scrollbars } from 'react-custom-scrollbars';
 
 import PlayerList from 'Components/GameRoom/PlayerList';
@@ -45,23 +49,23 @@ class GameRoom extends React.Component {
             game: false,
             players: [],
             cards: [
-                { card: 'Werewolf', name: 'Werewolf1', active: false },
-                { card: 'Werewolf', name: 'Werewolf2', active: false },
-                { card: 'Dream Wolf', name: 'DreamWolf', active: false },
-                { card: 'Mystic Wolf', name: 'MysticWolf', active: false },
-                { card: 'Minion', name: 'Minion', active: false },
+                { card: 'Demon', name: 'Demon1', active: false },
+                { card: 'Demon', name: 'Demon2', active: false },
+                { card: 'Restful Demon', name: 'RestfulDemon', active: false },
+                { card: 'Enchanted Demon', name: 'EnchantedDemon', active: false },
+                { card: 'Cultist', name: 'Cultist', active: false },
                 { card: 'Villager', name: 'Villager1', active: false },
                 { card: 'Villager', name: 'Villager2', active: false },
                 { card: 'Villager', name: 'Villager3', active: false },
-                { card: 'Mason', name: 'Mason1', active: false },
-                { card: 'Mason', name: 'Mason2', active: false },
-                { card: 'Seer', name: 'Seer', active: false },
-                { card: 'Apprentice Seer', name: 'ApprenticeSeer', active: false },
-                { card: 'Sentinel', name: 'Sentinel', active: false },
-                { card: 'Tanner', name: 'Tanner', active: false },
-                { card: 'Robber', name: 'Robber', active: false },
-                { card: 'Witch', name: 'Witch', active: false },
-                { card: 'Drunk', name: 'Drunk', active: false },
+                { card: 'Blacksmith', name: 'Blacksmith1', active: false },
+                { card: 'Blacksmith', name: 'Blacksmith2', active: false },
+                { card: 'Oracle', name: 'Oracle', active: false },
+                { card: 'Young Oracle', name: 'YoungOracle', active: false },
+                { card: 'Priest', name: 'Priest', active: false },
+                { card: 'Jester', name: 'Jester', active: false },
+                { card: 'Thief', name: 'Thief', active: false },
+                { card: 'Sorcerer', name: 'Sorcerer', active: false },
+                { card: 'Idiot', name: 'Idiot', active: false },
                 { card: 'Insomniac', name: 'Insomniac', active: false },
             ],
             dialogShow: false,
@@ -201,8 +205,10 @@ class GameRoom extends React.Component {
                     onClose={this.handleClose}
                     aria-labelledby="responsive-dialog-title"
                 >
-                    <Typography>{this.state.dialogText}</Typography>
-                    <Button onClick={this.handleDialogClose}>Dismiss</Button>
+                    <DialogTitle>{this.state.dialogText}</DialogTitle>
+                    <DialogActions>
+                        <Button onClick={this.handleDialogClose}>Dismiss</Button>
+                    </DialogActions>
                 </Dialog>
                 {this.state.loading ? (
                     <CircularProgress/>

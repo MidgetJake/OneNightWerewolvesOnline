@@ -1,11 +1,11 @@
 export default {
     Teams: {
-        Werewolf: 'werewolf',
+        Demon: 'demon',
         Village: 'village',
-        Tanner: 'tanner',
+        Jester: 'jester',
     },
-    url: 'https://werewolves.jakebarter.co.uk',
-    // url: 'http://localhost',
-    wsURL: 'wss://werewolves.jakebarter.co.uk',
-    // wsURL: 'ws://localhost',
+    // url: 'https://onenight.jakebarter.co.uk',
+    url: 'http://localhost',
+    // wsURL: 'wss://onenight.jakebarter.co.uk',
+    wsURL: 'ws://localhost',
 };

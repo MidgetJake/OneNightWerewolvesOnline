@@ -1,15 +1,15 @@
 const Card = require('./index');
 
-class Robber extends Card {
+class Sorcerer extends Card {
     constructor(clientName) {
         super({
             team: 'Village',
-            name: 'Witch',
+            name: 'Sorcerer',
             clientName,
             turn: '11',
             actionDesc: 'you look at a centre card and swap it with another players card',
             turnInstructions: 'Select a centre card, then select a player',
-            globalInstructions: 'Witch, wake up and look at a centre card. Then swap it with another players card',
+            globalInstructions: 'Sorcerer, wake up and look at a centre card. Then swap it with another players card',
             canInteract: 'both',
         });
 
@@ -77,4 +77,4 @@ class Robber extends Card {
     }
 }
 
-module.exports = Robber;
+module.exports = Sorcerer;

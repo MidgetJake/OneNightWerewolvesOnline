@@ -1,16 +1,16 @@
 const Card = require('./index');
 
-class Robber extends Card {
+class Idiot extends Card {
     constructor(clientName) {
         super({
             team: 'Village',
-            name: 'Robber',
+            name: 'Idiot',
             clientName,
-            turn: '10',
-            actionDesc: 'You look at another players card and swap it with your own',
-            turnInstructions: 'Select a player rob',
-            globalInstructions: 'Robber, wake up and swap your card with another players',
-            canInteract: 'player',
+            turn: '14',
+            actionDesc: 'You take a card from the centre cards, you do not look at it but become the role of that card',
+            turnInstructions: 'Select a centre card',
+            globalInstructions: 'Idiot, wake up and swap your card with a centre card',
+            canInteract: 'centre',
         });
     }
 
@@ -24,14 +24,14 @@ class Robber extends Card {
             switch (message.type) {
                 case 'check-card':
                     if (hasChecked) break;
-                    if (!message.data.centre) {
+                    if (message.data.centre) {
                         const tmpCard = gameRoom.playerCards[client.id];
-                        gameRoom.playerCards[client.id] = gameRoom.playerCards[message.data.id];
-                        gameRoom.playerCards[message.data.id] = tmpCard;
+                        gameRoom.playerCards[client.id] = gameRoom.centreCards[Number(message.data.id)];
+                        gameRoom.centreCards[Number(message.data.id)] = tmpCard;
                         hasChecked = true;
                         client.send(JSON.stringify({ type: 'wake-up',
                             data: {
-                                othersAwake: [{ type: gameRoom.playerCards[client.id], username: client.username + ' (You)', id: client.id }],
+                                othersAwake: [{ type: '', username: client.username + ' (You)', id: client.id }],
                                 turnInstructions: this.turnInstructions,
                                 canInteract: this.canInteract,
                                 blockedPlayer: gameRoom.blockedPlayer,
@@ -45,4 +45,4 @@ class Robber extends Card {
     }
 }
 
-module.exports = Robber;
+module.exports = Idiot;

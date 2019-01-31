@@ -1,16 +1,16 @@
 const Card = require('./index');
 
-class Werewolf extends Card {
+class EnchantedDemon extends Card {
     constructor(clientName) {
         super({
-            team: 'Werewolf',
-            name: 'Mystic Wolf',
+            team: 'Demon',
+            name: 'Enchanted Demon',
             clientName,
             turn: 2,
             extraTurns: [4, 5],
-            actionDesc: 'Wake up with the werewolves, then wake up again and look at another players card',
+            actionDesc: 'Wake up with the demons, then wake up again and look at another players card',
             turnInstructions: 'Look at another players card',
-            globalInstructions: 'Mystic Wolf, wake up and look at another players card',
+            globalInstructions: 'Enchanted Demon, wake up and look at another players card',
             canInteract: 'player',
         });
     }
@@ -47,4 +47,4 @@ class Werewolf extends Card {
     }
 }
 
-module.exports = Werewolf;
+module.exports = EnchantedDemon;

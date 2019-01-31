@@ -1,14 +1,14 @@
 const Card = require('./index');
 
-class Seer extends Card {
+class Oracle extends Card {
     constructor(clientName) {
         super({
-            name: 'Seer',
+            name: 'Oracle',
             clientName,
             turn: 7,
             actionDesc: 'You wake up and look at 1 player card or 2 centre cards',
             turnInstructions: 'Look at 2 centre cards or 1 player card',
-            globalInstructions: 'Seer, wake up and look at 2 centre cards or 1 player card',
+            globalInstructions: 'Oracle, wake up and look at 2 centre cards or 1 player card',
             canInteract: 'both',
         });
 
@@ -53,4 +53,4 @@ class Seer extends Card {
     }
 }
 
-module.exports = Seer;
+module.exports = Oracle;
