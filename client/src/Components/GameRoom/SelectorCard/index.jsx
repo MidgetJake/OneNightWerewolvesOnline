@@ -68,14 +68,15 @@ class SelectorCard extends React.Component {
             <Card className={classes.root}>
 
                 <ButtonBase focusRipple className={classes.cardButton} onClick={this.handleToggleActive}>
-                    <img className={classes.cardArt} src={'/' + PlaceholdImg} />{ this.props.card.active ? (
-                    <Icon
-                        path={mdiCheckCircleOutline}
-                        className={classes.active}
-                        size={4}
-                        color={'green'}
-                    />
-                ) : null }
+                    <img className={classes.cardArt} src={'/' + PlaceholdImg} />
+                    { this.props.card.active ? (
+                        <Icon
+                            path={mdiCheckCircleOutline}
+                            className={classes.active}
+                            size={4}
+                            color={'green'}
+                        />
+                    ) : null }
                 </ButtonBase>
 
                 <div className={classes.topContainter}>

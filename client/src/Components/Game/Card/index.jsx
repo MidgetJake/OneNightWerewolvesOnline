@@ -6,6 +6,7 @@ import Card from '@material-ui/core/Card';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import Typography from '@material-ui/core/Typography';
 import classnames from 'classnames';
+import {mdiInformationOutline} from "@mdi/js/mdi";
 
 class GameCard extends React.Component {
     constructor(props) {
@@ -53,12 +54,19 @@ class GameCard extends React.Component {
         return (
             <Card className={classnames(classes.root, { [classes.blocked]: this.state.blocked, [classes.killed]: this.state.killed })}>
                 <ButtonBase focusRipple className={classes.cardButton} onClick={this.handleClick}>
-                    <Typography>{this.state.cardName}{this.props.isSelf ? ' (You)' : null}</Typography>
-                    <Typography>{this.state.cardText}</Typography>
+                    <img className={classes.cardArt} src={'/' + PlaceholdImg} />
                     {this.state.isGame ?
                         this.state.centre ? null : (<Typography>Votes: {this.state.votes}</Typography>
-                    ) : ( null )}
+                    ) : (null)}
                 </ButtonBase>
+
+                <div className={classes.topContainter}>
+                    <Typography>{this.state.cardName}{this.props.isSelf ? ' (You)' : null}</Typography>
+                </div>
+
+                <div className={classes.bottomContainter}>
+                    <Typography>{this.state.cardText}</Typography>
+                </div>
             </Card>
         );
     }
