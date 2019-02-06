@@ -220,14 +220,14 @@ class GameRoom {
     }
 
     startGame() {
-        if (this.playerData.playerCount < 3) {
+        /*if (this.playerData.playerCount < 3) {
             console.log('Needs more players');
             return this.sendMessageToHost(JSON.stringify({ type: 'failed-game-start', data: { reason: 'Not enough players' } }));
         }
 
         if(this.playerData.playerCount !== this.cardsInPlay.length - 4) {
             return this.sendMessageToHost(JSON.stringify({ type: 'failed-game-start', data: { reason: 'Needs to be exactly 4 more cards than players' } }));
-        }
+        }*/
 
         this.inProgress = true;
         this.sendMessageToAll(JSON.stringify({

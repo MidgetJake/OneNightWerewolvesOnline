@@ -1,17 +1,20 @@
 export default theme => ({
     root: {
-        width: 125,
-        height: 150,
+        width: 175,
+        height: 225,
         textAlign: 'center',
+        margin: theme.spacing.unit,
+        marginTop: 0,
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'stretch',
-        margin: 15,
+        position: 'relative',
     },
     killed: {
         background: '#a55',
     },
     inactive: {
-        background: '#555',
+        background: theme.palette.cardColour,
     },
     cardButton: {
         flexGrow: 1,
@@ -26,11 +29,13 @@ export default theme => ({
         top: 0,
         borderBottomLeftRadius: 8,
         borderBottomRightRadius: 8,
-        background: theme.palette.cardColour,
+        background: theme.palette.titleback,
         width: 'calc(100% - 10px)',
         padding: 5,
         display: 'flex',
-        justifyContent: 'flex-end',
+        minHeight: 21,
+        alignItems: 'center',
+        justifyContent: 'center',
 
     },
     bottomContainter: {
@@ -38,9 +43,12 @@ export default theme => ({
         bottom: 0,
         borderTopLeftRadius: 8,
         borderTopRightRadius: 8,
-        background: theme.palette.cardColour,
+        background: theme.palette.titleback,
         width: '100%',
         padding: 5,
+        minHeight: 21,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     cardArt: {
         width: '100%',
