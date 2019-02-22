@@ -33,11 +33,12 @@ const config = {
                 use: ['css-loader'],
             },
             {
-                test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
+                test: /\.(bmp|gif|jpg|png)$/,
                 loader: 'url-loader',
                 options: {
-                    limit: 100000,
+                    limit: 1024,
                     name: 'static/media/[name].[hash:8].[ext]',
+                    publicPath: '/',
                 },
             },
         ],

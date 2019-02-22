@@ -5,6 +5,7 @@ import withMobileDialog from '@material-ui/core/withMobileDialog';
 import style from './style';
 import classnames from 'classnames';
 import axios from 'axios';
+import cardImage from 'Helpers/CardImage';
 
 import Card from '@material-ui/core/Card';
 import Typography from '@material-ui/core/Typography';
@@ -68,7 +69,7 @@ class SelectorCard extends React.Component {
             <Card className={classes.root}>
 
                 <ButtonBase focusRipple className={classes.cardButton} onClick={this.handleToggleActive}>
-                    <img className={classes.cardArt} src={'/' + PlaceholdImg} />
+                    <img className={classes.cardArt} src={cardImage(this.props.card.card.toLowerCase())} />
                     { this.props.card.active ? (
                         <Icon
                             path={mdiCheckCircleOutline}
