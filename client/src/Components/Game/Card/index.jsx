@@ -7,7 +7,6 @@ import ButtonBase from '@material-ui/core/ButtonBase';
 import Typography from '@material-ui/core/Typography';
 import classnames from 'classnames';
 
-import PlaceholdImg from 'Static/Img/CardArt/Placehold.png';
 import cardImage from 'Helpers/CardImage';
 
 class GameCard extends React.Component {
@@ -52,12 +51,11 @@ class GameCard extends React.Component {
 
     render() {
         const { classes } = this.props;
-        console.log(this.state.cardText);
 
         return (
             <Card className={classnames(classes.root, { [classes.blocked]: this.state.blocked, [classes.killed]: this.state.killed })}>
                 <ButtonBase focusRipple className={classes.cardButton} onClick={this.handleClick}>
-                    {(this.state.cardText !== '' && this.state.cardText !== null) && <img className={classes.cardArt} src={cardImage(this.props.card.card.toLowerCase())} />}
+                    {(this.state.cardText !== '' && this.state.cardText !== null) && <img className={classes.cardArt} src={cardImage(this.state.cardText.toLowerCase())} />}
                 </ButtonBase>
 
                 <div className={classes.topContainter}>

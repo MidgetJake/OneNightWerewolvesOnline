@@ -28,7 +28,7 @@ class Card {
     }
 
     static isWerewolf(cardName) {
-        switch(cardName) {
+        switch (cardName) {
             case 'Demon':
             case 'Enchanted Demon':
             case 'Restful Demon':
@@ -39,7 +39,7 @@ class Card {
     }
 
     static determineWinner(cardName) {
-        switch(cardName) {
+        switch (cardName) {
             case 'Demon':
             case 'Enchanted Demon':
             case 'Restful Demon':

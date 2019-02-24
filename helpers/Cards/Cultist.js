@@ -3,6 +3,7 @@ const Card = require('./index');
 class Cultist extends Card {
     constructor(clientName) {
         super({
+            team: 'Demon',
             name: 'Cultist',
             clientName,
             turn: 5,

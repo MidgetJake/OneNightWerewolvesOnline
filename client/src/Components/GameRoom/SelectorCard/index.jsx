@@ -21,8 +21,6 @@ import Divider from '@material-ui/core/Divider';
 import Icon from '@mdi/react';
 import { mdiInformationOutline, mdiCheckCircleOutline } from '@mdi/js';
 
-import PlaceholdImg from 'Static/Img/CardArt/Placehold.png';
-
 class SelectorCard extends React.Component {
     constructor(props) {
         super(props);
@@ -49,7 +47,6 @@ class SelectorCard extends React.Component {
             },
         };
 
-        console.log('Changing status of', this.props.card.name, 'to', !this.state.active);
         this.setState({ active: !this.state.active });
         this.props.sendMessage(JSON.stringify(socketMessage));
     };

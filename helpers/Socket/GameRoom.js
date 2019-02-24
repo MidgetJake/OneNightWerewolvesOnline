@@ -35,12 +35,26 @@ class GameRoom {
 
         this.aliveInterval = setInterval(() => {
             this.checkIfAlive();
-        }, 120000)
+        }, 120000);
+
+        this.playerInterval = setInterval(() => {
+            Object.keys(this.playerData.players).forEach(clientID => {
+                if (clientID === 'centre') return;
+                if (this.playerData.players[clientID].isAlive === false) {
+                    this.disconnect(this.playerData.players[clientID]);
+                    return this.playerData.players[clientID].terminate();
+                }
+
+                this.playerData.players[clientID].isAlive = false;
+                this.playerData.players[clientID].ping(() => {});
+            });
+        }, 30000);
     }
 
     checkIfAlive() {
         if (this.playerData.playerCount < 1) {
             clearInterval(this.aliveInterval);
+            clearInterval(this.playerInterval);
             this.removeSelf(this.roomhash);
         }
     };
@@ -206,7 +220,7 @@ class GameRoom {
                 packet.data = {
                     ...packet.data,
                     centre: true,
-                    winningTeam: Object.keys(this.playerCards).reduce((accumulator, nextVal) => accumulator ? accumulator : Cards.isWerewolf(this.playerCards[nextVal]), false) ? 'Werewolf' : 'Village',
+                    winningTeam: Object.keys(this.playerCards).reduce((accumulator, nextVal) => accumulator ? accumulator : Cards.isWerewolf(this.playerCards[nextVal]), false) ? 'Demon' : 'Village',
                 }
             }
 
@@ -248,7 +262,7 @@ class GameRoom {
 
         let count = 0;
         for (let clientID in this.playerData.players) {
-            if(!this.playerData.players.hasOwnProperty(clientID)) continue;
+            if (!this.playerData.players.hasOwnProperty(clientID)) continue;
             this.playerData.players[clientID].send(JSON.stringify({ type: 'card-assign', data: { card: cardList[count].name, id: clientID } }));
             cardList[count].player = this.playerData.players[clientID];
             this.playerData.players[clientID].card = cardList[count];
@@ -365,7 +379,7 @@ class GameRoom {
 
     sendMessageToHost(message) {
         for (let clientID in this.playerData.players) {
-            if(!this.playerData.players.hasOwnProperty(clientID) || clientID === 'centre') continue;
+            if (!this.playerData.players.hasOwnProperty(clientID) || clientID === 'centre') continue;
             if (this.playerData.players[clientID].host && this.playerData.players[clientID].readyState === WebSocket.OPEN) {
                 this.playerData.players[clientID].send(message);
                 break;
