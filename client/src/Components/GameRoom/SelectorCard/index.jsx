@@ -5,6 +5,7 @@ import withMobileDialog from '@material-ui/core/withMobileDialog';
 import style from './style';
 import classnames from 'classnames';
 import axios from 'axios';
+import cardImage from 'Helpers/CardImage';
 
 import Card from '@material-ui/core/Card';
 import Typography from '@material-ui/core/Typography';
@@ -19,8 +20,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
 import Icon from '@mdi/react';
 import { mdiInformationOutline, mdiCheckCircleOutline } from '@mdi/js';
-
-import PlaceholdImg from 'Static/Img/CardArt/Placehold.png';
 
 class SelectorCard extends React.Component {
     constructor(props) {
@@ -48,7 +47,6 @@ class SelectorCard extends React.Component {
             },
         };
 
-        console.log('Changing status of', this.props.card.name, 'to', !this.state.active);
         this.setState({ active: !this.state.active });
         this.props.sendMessage(JSON.stringify(socketMessage));
     };
@@ -68,14 +66,15 @@ class SelectorCard extends React.Component {
             <Card className={classes.root}>
 
                 <ButtonBase focusRipple className={classes.cardButton} onClick={this.handleToggleActive}>
-                    <img className={classes.cardArt} src={'/' + PlaceholdImg} />{ this.props.card.active ? (
-                    <Icon
-                        path={mdiCheckCircleOutline}
-                        className={classes.active}
-                        size={4}
-                        color={'green'}
-                    />
-                ) : null }
+                    <img className={classes.cardArt} src={cardImage(this.props.card.card.toLowerCase())} />
+                    { this.props.card.active ? (
+                        <Icon
+                            path={mdiCheckCircleOutline}
+                            className={classes.active}
+                            size={4}
+                            color={'green'}
+                        />
+                    ) : null }
                 </ButtonBase>
 
                 <div className={classes.topContainter}>

@@ -42,19 +42,7 @@ class Index {
                 }
             });
         });
-
-        // Check what clients are still alive every 30 seconds
-        // ToDo: move this to the GameRoom class so that the rooms know the user has disconnected
-        setInterval(() => {
-            this.ws.clients.forEach(clientWS => {
-                if (clientWS.isAlive === false) return clientWS.terminate();
-                clientWS.isAlive = false;
-                clientWS.ping(() => {});
-            });
-        }, 30000);
     }
-
-
 
     createRoom(hostname, roomname, data = {}) {
         const roomhash = shortid.generate();

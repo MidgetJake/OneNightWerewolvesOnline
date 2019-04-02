@@ -59,5 +59,8 @@ export default theme => ({
         display: 'flex',
         width: '100%',
         justifyContent: 'center',
+        maxHeight: '50vh',
+        flexWrap: 'wrap',
+        overflowY: 'auto',
     },
 });

@@ -47,5 +47,5 @@ export default theme => ({
     },
     cardArt: {
         width: '100%',
-    }
+    },
 });

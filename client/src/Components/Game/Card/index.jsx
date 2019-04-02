@@ -7,6 +7,8 @@ import ButtonBase from '@material-ui/core/ButtonBase';
 import Typography from '@material-ui/core/Typography';
 import classnames from 'classnames';
 
+import cardImage from 'Helpers/CardImage';
+
 class GameCard extends React.Component {
     constructor(props) {
         super(props);
@@ -31,7 +33,7 @@ class GameCard extends React.Component {
                 this.props.onClick(this.state.centre, this.props.id);
             }
         } else {
-            if(this.state.centre) return;
+            if (this.state.centre) return;
             this.props.onClick(null, this.state.centre ? 'centre' : this.props.id);
         }
     };
@@ -53,12 +55,22 @@ class GameCard extends React.Component {
         return (
             <Card className={classnames(classes.root, { [classes.blocked]: this.state.blocked, [classes.killed]: this.state.killed })}>
                 <ButtonBase focusRipple className={classes.cardButton} onClick={this.handleClick}>
-                    <Typography>{this.state.cardName}{this.props.isSelf ? ' (You)' : null}</Typography>
-                    <Typography>{this.state.cardText}</Typography>
-                    {this.state.isGame ?
-                        this.state.centre ? null : (<Typography>Votes: {this.state.votes}</Typography>
-                    ) : ( null )}
+                    {(this.state.cardText !== '' && this.state.cardText !== null) && <img className={classes.cardArt} src={cardImage(this.state.cardText.toLowerCase())} />}
                 </ButtonBase>
+
+                <div className={classes.topContainter}>
+                    <Typography>{this.state.cardName}{this.props.isSelf ? ' (You)' : null}</Typography>
+                </div>
+
+                <div className={classes.bottomContainter}>
+                    <Typography>
+                        {this.state.isGame ?
+                            this.state.centre ? null : ('Votes:' + this.state.votes)
+                        : (
+                            this.state.cardText
+                        )}
+                    </Typography>
+                </div>
             </Card>
         );
     }
