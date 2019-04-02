@@ -194,7 +194,7 @@ function NumberFormatCustomPlayers(props) {
                     },
                 });
             }}
-            suffix=" Seconds"
+            suffix=" Players"
             isAllowed={values => values.floatValue > 2 && values.floatValue < 15}
         />
     );

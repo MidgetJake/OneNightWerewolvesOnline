@@ -7,7 +7,7 @@ class Thief extends Card {
             name: 'Thief',
             clientName,
             turn: '10',
-            actionDesc: 'You look at another players card and swap it with your own',
+            actionDesc: 'As a thief you will steal another players card. You will then become the role that you have stolen.',
             turnInstructions: 'Select a player and take their role',
             globalInstructions: 'Thief, wake up and swap your card with another players',
             canInteract: 'player',

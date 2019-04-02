@@ -1,40 +1,42 @@
 const Card = require('./index');
 
-class Demon extends Card {
+class MysticWolf extends Card {
     constructor(clientName) {
         super({
-            team: 'Demon',
-            name: 'Demon',
+            team: 'Werewolf',
+            name: 'Mystic Wolf',
             clientName,
             turn: 2,
-            extraTurns: [5],
-            actionDesc: 'You know the other demons and are trying to stay hidden from the village',
-            turnInstructions: 'You can now see the other demons',
-            globalInstructions: 'Demons, rise and see the other demons',
+            extraTurns: [4, 5],
+            actionDesc: 'As a mystic wolf you wake up twice. First with the other werewolves and then again to view another players card.',
+            turnInstructions: 'Select a player to view their card',
+            globalInstructions: 'Mystic Wolf, wake up and look at another players card',
+            canInteract: 'player',
         });
     }
 
     doTurn(client, gameRoom) {
         if (gameRoom.turn === 5) return;
-        this.canInteract = gameRoom.awakePlayers.length > 1 ? 'none' : 'centre';
-        this.wakeUp(client, gameRoom);
+        this.wakeUp(client, gameRoom, true);
         let hasChecked = false;
 
+        if (gameRoom.turn !== 4) return;
         client.on('message', rawmsg => {
             const message = JSON.parse(rawmsg);
 
             switch (message.type) {
                 case 'check-card':
                     if (hasChecked) break;
-                    if (message.data.centre) {
+                    if (!message.data.centre) {
+                        if (gameRoom.blockedPlayer === message.data.id) break;
                         hasChecked = true;
 
                         client.send(JSON.stringify({
                             type: 'show-card',
                             data: {
                                 id: message.data.id,
-                                centre: true,
-                                cardName: gameRoom.centreCards[message.data.id],
+                                centre: false,
+                                cardName: gameRoom.playerCards[message.data.id],
                             },
                         }));
                     }
@@ -45,4 +47,4 @@ class Demon extends Card {
     }
 }
 
-module.exports = Demon;
+module.exports = MysticWolf;

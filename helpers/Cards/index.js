@@ -29,9 +29,9 @@ class Card {
 
     static isWerewolf(cardName) {
         switch(cardName) {
-            case 'Demon':
-            case 'Enchanted Demon':
-            case 'Restful Demon':
+            case 'Werewolf':
+            case 'Mystic Wolf':
+            case 'Sleeping Wolf':
                 return true;
             default:
                 return false;
@@ -40,14 +40,14 @@ class Card {
 
     static determineWinner(cardName) {
         switch(cardName) {
-            case 'Demon':
-            case 'Enchanted Demon':
-            case 'Restful Demon':
+            case 'Werewolf':
+            case 'Mystic Wolf':
+            case 'Sleeping Wolf':
                 return 'Village';
             case 'Jester':
                 return 'Jester';
             default:
-                return 'Demon';
+                return 'Werewolf';
         }
     }
 }

@@ -69,7 +69,7 @@ class Game extends React.Component {
                     <Card className={classes.createTitle}>
                         <Typography>Create a room</Typography>
                     </Card>
-                    <TextField
+                    {/*<TextField
                         className={classes.textBox}
                         name={'room-name'}
                         label='Room Name'
@@ -78,7 +78,7 @@ class Game extends React.Component {
                         margin='normal'
                         variant="outlined"
                         autoComplete={'nickname'}
-                    />
+                    />*/}
                     <TextField
                         className={classes.textBox}
                         name={'room-pass'}

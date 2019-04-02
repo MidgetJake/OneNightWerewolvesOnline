@@ -7,7 +7,7 @@ class Jester extends Card {
             name: 'Jester',
             clientName,
             turn: -1,
-            actionDesc: 'Your goal is to get yourself voted and killed, you lose otherwise',
+            actionDesc: 'As a jester you do not wake up. Your goal is to get yourself voted. If you have the majority vote you win.',
         });
     }
 }

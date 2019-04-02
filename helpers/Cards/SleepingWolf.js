@@ -1,15 +1,15 @@
 const Card = require('./index');
 
-class RestfulDemon extends Card {
+class SleepingWolf extends Card {
     constructor(clientName) {
         super({
-            team: 'Demon',
-            name: 'Restful Demon',
+            team: 'Werewolf',
+            name: 'Sleeping Wolf',
             clientName,
             turn: 2,
             extraTurns: [5],
-            turnInstructions: 'You are still asleep, but the other demons know who you are',
-            actionDesc: 'You know that you are a demon, but you sleep through the night and have no idea who the other demons but they know you',
+            turnInstructions: 'You are still asleep, but the other werewolves know who you are',
+            actionDesc: 'As a sleeping werewolf you will not wake up during the night. However, the werewolves will know who you are but you will have to work out who they are.',
         });
     }
 
@@ -24,4 +24,4 @@ class RestfulDemon extends Card {
     }
 }
 
-module.exports = RestfulDemon;
+module.exports = SleepingWolf;

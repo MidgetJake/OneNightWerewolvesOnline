@@ -7,9 +7,9 @@ class Insomniac extends Card {
             name: 'Insomniac',
             clientName,
             turn: '15',
-            actionDesc: 'You wake up near the end and look at your card',
-            turnInstructions: 'Look at your card',
-            globalInstructions: 'Insomniac, wake up and look at your card',
+            actionDesc: 'As the insomniac you wake up last and check you own card for any changes.',
+            turnInstructions: 'View at your card',
+            globalInstructions: 'Insomniac, wake up and look at your own card',
             canInteract: 'player',
         });
     }

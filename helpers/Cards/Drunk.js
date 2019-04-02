@@ -1,15 +1,15 @@
 const Card = require('./index');
 
-class Idiot extends Card {
+class Drunk extends Card {
     constructor(clientName) {
         super({
             team: 'Village',
-            name: 'Idiot',
+            name: 'Drunk',
             clientName,
             turn: '14',
-            actionDesc: 'You take a card from the centre cards, you do not look at it but become the role of that card',
-            turnInstructions: 'Select a centre card',
-            globalInstructions: 'Idiot, wake up and swap your card with a centre card',
+            actionDesc: 'As a drunk you select a single card from the centre and become whatever role the card is. You do not view or know what this role is',
+            turnInstructions: 'Select a card from the centre',
+            globalInstructions: 'Drunk, wake up and swap your card with a centre card',
             canInteract: 'centre',
         });
     }
@@ -45,4 +45,4 @@ class Idiot extends Card {
     }
 }
 
-module.exports = Idiot;
+module.exports = Drunk;

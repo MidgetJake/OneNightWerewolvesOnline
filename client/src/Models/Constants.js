@@ -1,6 +1,6 @@
 export default {
     Teams: {
-        Demon: 'demon',
+        Werewolf: 'werewolf',
         Village: 'village',
         Jester: 'jester',
     },

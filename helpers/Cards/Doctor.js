@@ -1,15 +1,15 @@
 const Card = require('./index');
 
-class Priest extends Card {
+class Doctor extends Card {
     constructor(clientName) {
         super({
             team: 'Village',
-            name: 'Priest',
+            name: 'Doctor',
             clientName,
             turn: '0',
-            actionDesc: 'You wake up and select a player to guard. This players role cannot be changed or viewed',
+            actionDesc: 'As the village doctor you wake up first and select a player to protect. Nothing may then happen to this players card.',
             turnInstructions: 'Select a player to guard',
-            globalInstructions: 'Priest, select a player to guard',
+            globalInstructions: 'Doctor, select a player to guard',
             canInteract: 'player',
         });
     }
@@ -36,4 +36,4 @@ class Priest extends Card {
     }
 }
 
-module.exports = Priest;
+module.exports = Doctor;
