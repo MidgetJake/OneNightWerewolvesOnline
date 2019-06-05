@@ -220,7 +220,7 @@ class GameRoom {
                 packet.data = {
                     ...packet.data,
                     centre: true,
-                    winningTeam: Object.keys(this.playerCards).reduce((accumulator, nextVal) => accumulator ? accumulator : Cards.isWerewolf(this.playerCards[nextVal]), false) ? 'Demon' : 'Village',
+                    winningTeam: Object.keys(this.playerCards).reduce((accumulator, nextVal) => accumulator ? accumulator : Cards.isWerewolf(this.playerCards[nextVal]), false) ? 'Werewolf' : 'Village',
                 }
             }
 
@@ -304,7 +304,7 @@ class GameRoom {
         console.log('--[ WS ROOM DISCONNECT ]-- Client', client.id, 'has disconnected from room', this.roomhash);
         delete this.playerData.players[client.id];
         this.playerData.playerCount--;
-        this.sendMessageToAll(JSON.stringify({ type: 'user-disconnected' }));
+        this.sendMessageToAll(JSON.stringify({ type: 'user-disconnected', data: { id: client.id } }));
     }
 
     connect(client) {

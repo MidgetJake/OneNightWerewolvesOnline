@@ -7,17 +7,12 @@ module.exports = function() {
         setRouting: function(router) {
             router.get('/card/:cardname', this.getCardInfo);
             router.get('/room/getall', this.getRooms);
-            // router.get('/static/media/:file', this.getStatic);
             router.get('*', this.indexPage);
 
             router.post('/room/create', this.createRoom);
             router.post('/room/exists/:roomhash', this.roomExists);
             router.post('/room/players/:roomhash', this.roomPlayers);
             router.post('/room/getcards/:roomhash', this.getRoomCards);
-        },
-
-        getStatic: function(req, res) {
-
         },
 
         setSocket: function(socket) {
